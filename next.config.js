@@ -4,7 +4,10 @@ const nextConfig = {
   output: 'export',
   
   // Set the base path for GitHub Pages deployment
-  basePath: process.env.NODE_ENV === 'production' ? '/SaladinoWebsite' : '',
+  basePath: '/SaladinoWebsite',
+  
+  // Set the asset prefix for GitHub Pages deployment
+  assetPrefix: '/SaladinoWebsite',
   
   // GitHub Pages doesn't support trailing slashes, so we disable them
   trailingSlash: false,

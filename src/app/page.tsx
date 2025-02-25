@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Metadata } from 'next';
+import { getAssetPath } from '@/utils/paths';
 
 // Tour packages data
 const featuredTours = [
@@ -126,14 +127,14 @@ export default function Home() {
             playsInline
             className="absolute inset-0 w-full h-full object-cover"
           >
-            <source src="/videos/hero-bg.mp4" type="video/mp4" />
+            <source src={getAssetPath("/videos/hero-bg.mp4")} type="video/mp4" />
           </video>
         </div>
         
         <div className="container-custom relative z-20 mt-20">
           <div className="max-w-3xl mx-auto text-center">
             <Image 
-              src="/images/saladino-travel-logo.svg" 
+              src={getAssetPath("/images/saladino-travel-logo.svg")} 
               alt="Saladino Travel" 
               width={300} 
               height={120} 
@@ -187,7 +188,7 @@ export default function Home() {
                 <div className="relative h-64 overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10"></div>
                   <Image 
-                    src={tour.image} 
+                    src={getAssetPath(tour.image)} 
                     alt={tour.title} 
                     fill 
                     className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -244,14 +245,14 @@ export default function Home() {
               >
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10"></div>
                 <Image 
-                  src={destination.image} 
+                  src={getAssetPath(destination.image)} 
                   alt={destination.name} 
                   fill 
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
                 />
-                <div className="absolute bottom-0 left-0 p-6 z-20">
-                  <h3 className="text-xl font-bold text-white mb-2">{destination.name}</h3>
-                  <p className="text-gray-200 text-sm">{destination.description}</p>
+                <div className="absolute left-4 bottom-4 z-20">
+                  <h3 className="text-xl font-bold text-white">{destination.name}</h3>
+                  <p className="text-white/80 text-sm">{destination.description}</p>
                 </div>
               </Link>
             ))}
@@ -266,42 +267,34 @@ export default function Home() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-16 bg-primary-50">
+      <section className="py-16 bg-gray-50">
         <div className="container-custom">
           <div className="text-center mb-12">
             <h2 className="mb-4">What Our Travelers Say</h2>
             <p className="text-gray-600 max-w-3xl mx-auto">
-              Read testimonials from our satisfied customers who have experienced the magic of our tours.
+              Hear from satisfied travelers who have experienced our premium tours and service.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {testimonials.map((testimonial) => (
-              <div key={testimonial.id} className="card p-6">
+              <div key={testimonial.id} className="bg-white p-6 rounded-xl shadow-md">
                 <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-300 mr-4">
-                    <Image 
-                      src={testimonial.avatar} 
-                      alt={testimonial.name} 
-                      width={48} 
-                      height={48} 
-                      className="object-cover w-full h-full"
-                    />
-                  </div>
+                  <Image 
+                    src={getAssetPath(testimonial.avatar)} 
+                    alt={testimonial.name} 
+                    width={60} 
+                    height={60} 
+                    className="rounded-full object-cover mr-4"
+                  />
                   <div>
-                    <h4 className="font-bold">{testimonial.name}</h4>
-                    <p className="text-sm text-gray-600">{testimonial.country}</p>
+                    <h3 className="font-semibold">{testimonial.name}</h3>
+                    <p className="text-gray-500 text-sm">{testimonial.country}</p>
                   </div>
                 </div>
                 <p className="text-gray-600 italic">"{testimonial.text}"</p>
               </div>
             ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <Link href="/testimonials" className="btn btn-outline">
-              Read More Testimonials
-            </Link>
           </div>
         </div>
       </section>

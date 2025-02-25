@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { getAssetPath } from '@/utils/paths';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -36,7 +37,7 @@ const Header = () => {
             </div>
           ) : (
             <Image 
-              src="/images/saladino-travel-logo.svg" 
+              src={getAssetPath("/images/saladino-travel-logo.svg")} 
               alt="Saladino Travel" 
               width={180} 
               height={70}
