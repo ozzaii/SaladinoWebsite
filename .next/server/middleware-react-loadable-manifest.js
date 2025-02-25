@@ -1,0 +1,1 @@
+self.__REACT_LOADABLE_MANIFEST='{"components/shared/ChatWrapper.tsx -> @/components/shared/ChatComponent":{"id":3710,"files":["static/chunks/710.7d58c3ed918ba9d7.js"]}}';
