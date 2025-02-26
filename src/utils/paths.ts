@@ -14,8 +14,8 @@ const basePath = isProduction ? '/SaladinoWebsite' : '';
  * @returns The prefixed path
  */
 export function getAssetPath(path: string): string {
-  // If the path already includes the base path or is an external URL, return it as is
-  if (path.startsWith('http') || path.startsWith(basePath)) {
+  // If the path is an external URL, return it as is
+  if (path.startsWith('http')) {
     return path;
   }
   

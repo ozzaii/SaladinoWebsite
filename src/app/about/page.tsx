@@ -1,8 +1,9 @@
 import React from 'react';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Metadata } from 'next';
+import { getAssetPath } from '@/utils/paths';
 
 export const metadata: Metadata = {
   title: 'About Us | Saladino Travel',
@@ -13,10 +14,10 @@ export default function AboutPage() {
   // Mock team members data
   const teamMembers = [
     {
-      name: 'Marco Saladino',
+      name: 'Selahaddin Tezel',
       position: 'Founder & CEO',
-      bio: 'With over 20 years of experience in tourism, Marco founded Saladino Travel with a vision to provide authentic experiences that connect travelers with the true essence of Turkey and Dubai.',
-      image: '/images/team/marco.jpg',
+      bio: 'With over 20 years of experience in tourism, Selahaddin founded Saladino Travel with a vision to provide authentic experiences that connect travelers with the true essence of Turkey, Dubai, Greece, and Egypt.',
+      image: '/images/team/selahaddin-tezel.jpg',
     },
     {
       name: 'Ayşe Yilmaz',
@@ -44,86 +45,110 @@ export default function AboutPage() {
       title: 'Authentic Experiences',
       description: 'We believe in creating genuine connections between travelers and local cultures, moving beyond typical tourist attractions.',
       icon: (
-        <svg className="w-10 h-10 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="w-10 h-10 text-[#14b8a6]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       ),
     },
     {
-      title: 'Exceptional Service',
-      description: 'Every detail of your journey is carefully planned and executed with the highest standard of service and personal attention.',
-      icon: (
-        <svg className="w-10 h-10 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-        </svg>
-      ),
-    },
-    {
       title: 'Sustainable Tourism',
-      description: 'We\'re committed to responsible travel practices that respect and preserve local communities, environments, and cultural heritage.',
+      description: 'We are committed to minimizing our environmental impact and supporting local communities through responsible tourism practices.',
       icon: (
-        <svg className="w-10 h-10 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+        <svg className="w-10 h-10 text-[#14b8a6]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
         </svg>
       ),
     },
     {
-      title: 'Innovation',
-      description: 'We embrace technology and new approaches to enhance travel experiences while maintaining the timeless elements that make travel special.',
+      title: 'Personalized Service',
+      description: 'No two travelers are alike. We tailor our services to match your interests, preferences, and travel style for a truly personalized journey.',
       icon: (
-        <svg className="w-10 h-10 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+        <svg className="w-10 h-10 text-[#14b8a6]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+      ),
+    },
+    {
+      title: 'Cultural Respect',
+      description: 'We approach every destination with respect for local customs, traditions, and ways of life, promoting cross-cultural understanding.',
+      icon: (
+        <svg className="w-10 h-10 text-[#14b8a6]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
         </svg>
       ),
     },
   ];
 
   return (
-    <main className="min-h-screen flex flex-col">
-      <Header />
-      
+    <main className="bg-white">
       {/* Hero Section */}
-      <section className="relative h-[50vh] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary-900/70 to-primary-700/50 z-10"></div>
-        <div className="absolute inset-0 bg-gray-300"></div>
-        {/* This would be replaced with an actual image */}
-        {/* <Image 
-          src="/images/about-hero.jpg"
-          alt="About Saladino Travel" 
-          fill 
-          className="object-cover"
-        /> */}
-        
-        <div className="container-custom relative z-20 text-white text-center">
-          <h1 className="mb-6">Our Story</h1>
-          <p className="text-xl max-w-3xl mx-auto">
-            Creating unforgettable journeys through the heart of Turkey and Dubai since 2005
-          </p>
+      <section className="relative h-[70vh] bg-gray-900 flex items-center">
+        <div className="absolute inset-0 overflow-hidden bg-gradient-to-r from-[#9e1687]/80 to-[#14b8a6]/80">
+          <Image 
+            src={getAssetPath("/images/tours/turkish-delight.jpg")} 
+            alt="About Saladino Travel" 
+            fill 
+            className="object-cover object-center mix-blend-overlay"
+            priority
+          />
         </div>
-      </section>
-
-      {/* Our Story Section */}
-      <section className="py-16 bg-white">
-        <div className="container-custom">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <h2 className="mb-6">The Saladino Travel Journey</h2>
-              <div className="space-y-6">
-                <p>
-                  Saladino Travel was founded in 2005 by Marco Saladino, an Italian traveler who fell in love with Turkey during his first visit and decided to make it his home. What began as a small operation offering guided tours in Istanbul has grown into a premier travel agency specializing in curated experiences throughout Turkey and Dubai.
-                </p>
-                <p>
-                  Our journey over the past 18 years has been defined by our passion for creating authentic connections between travelers and the rich cultural tapestries of these extraordinary destinations. We've guided thousands of visitors from around the world, helping them discover not just the iconic landmarks, but the hidden gems and local experiences that make a journey truly memorable.
-                </p>
-                <p>
-                  Today, we pride ourselves on combining traditional hospitality with modern innovation. Our team of experienced local guides, travel specialists, and customer service experts work together to craft journeys that balance comfort, adventure, and authentic cultural immersion.
-                </p>
+        
+        <div className="container-custom relative z-20 max-w-screen-xl mx-auto">
+          <div className="max-w-3xl">
+            <div className="relative">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 drop-shadow-md leading-tight">
+                Our <span className="bg-gradient-to-r from-[#9e1687] to-[#14b8a6] text-transparent bg-clip-text">Story</span>
+              </h1>
+              <p className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl leading-relaxed">
+                From our humble beginnings to becoming a premier travel agency, discover the passion and commitment that drives Saladino Travel.
+              </p>
+              <div className="flex space-x-4">
+                <Link href="/contact" className="btn-primary px-6 py-3 rounded-md bg-gradient-to-r from-[#9e1687] to-[#14b8a6] text-white font-semibold hover:from-[#8a1375] hover:to-[#109e8e] transition duration-300 inline-flex items-center shadow-lg">
+                  Contact Us
+                  <svg className="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </Link>
+                <Link href="/tours" className="btn-secondary px-6 py-3 rounded-md border-2 border-white/70 text-white font-semibold hover:bg-white/10 transition duration-300 inline-flex items-center">
+                  View Tours
+                </Link>
               </div>
             </div>
-            <div className="relative h-96 bg-gray-200 rounded-xl overflow-hidden">
-              {/* This would be replaced with an actual image */}
-              <div className="absolute inset-0 flex items-center justify-center text-gray-500">
-                Company History Image
+          </div>
+        </div>
+      </section>
+      
+      {/* Our Story Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="container-custom max-w-screen-xl mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="relative rounded-xl overflow-hidden bg-gradient-to-r from-[#9e1687]/10 to-[#14b8a6]/10">
+              <div className="aspect-w-4 aspect-h-3 relative rounded-xl overflow-hidden shadow-2xl transform hover:scale-[1.02] transition duration-500">
+                <Image 
+                  src={getAssetPath("/images/about/our-story.jpg")} 
+                  alt="Saladino Travel team" 
+                  fill 
+                  className="object-cover"
+                />
+              </div>
+              <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-gradient-to-br from-[#9e1687] to-[#14b8a6] rounded-full opacity-30 blur-lg"></div>
+            </div>
+            
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6 leading-tight">
+                <span className="bg-gradient-to-r from-[#9e1687] to-[#14b8a6] text-transparent bg-clip-text">Bringing the Magic</span> of Turkey & Dubai to Life Since 2010
+              </h2>
+              
+              <div className="prose prose-lg max-w-none">
+                <p>
+                  Saladino Travel was born from a deep love for the rich cultures, stunning landscapes, and historic wonders of Turkey and Dubai. Our founder, Marco Saladino, first visited Istanbul as a backpacker in 2005 and was instantly captivated by the city where East meets West.
+                </p>
+                <p>
+                  After spending years exploring every corner of these magnificent regions, Selahaddin assembled a team of passionate locals who shared his vision: to create immersive travel experiences that go beyond the typical tourist routes and connect travelers with the authentic heart of these extraordinary destinations.
+                </p>
+                <p>
+                  Today, Saladino Travel has grown into a premier travel agency, yet we remain true to our original mission. Our hand-crafted tours combine must-see highlights with hidden gems, creating journeys that transform mere tourists into true travelers who connect deeply with the places they visit.
+                </p>
               </div>
             </div>
           </div>
@@ -131,120 +156,60 @@ export default function AboutPage() {
       </section>
       
       {/* Our Values Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="container-custom">
-          <div className="text-center mb-12">
-            <h2 className="mb-4">Our Values</h2>
-            <p className="text-gray-600 max-w-3xl mx-auto">
-              The principles that guide everything we do
+      <section className="py-20 bg-white">
+        <div className="container-custom max-w-screen-xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <span className="text-[#14b8a6] font-semibold tracking-wider uppercase">Our Principles</span>
+            <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">
+              <span className="bg-gradient-to-r from-[#9e1687] to-[#14b8a6] text-transparent bg-clip-text">Our Values</span> Guide Everything We Do
+            </h2>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              Every tour, every interaction, and every decision is shaped by our commitment to these core values.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {ourValues.map((value, index) => (
-              <div key={index} className="bg-white rounded-xl p-8 shadow-sm flex">
-                <div className="mr-6 flex-shrink-0">
+              <div key={index} className="bg-white p-8 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl hover:border-[#14b8a6]/20 transition duration-300 group">
+                <div className="w-16 h-16 bg-gradient-to-r from-[#9e1687]/10 to-[#14b8a6]/10 rounded-full flex items-center justify-center mb-6 group-hover:from-[#9e1687]/20 group-hover:to-[#14b8a6]/20 transition duration-300">
                   {value.icon}
                 </div>
-                <div>
-                  <h3 className="text-xl font-bold mb-3 text-primary-700">{value.title}</h3>
-                  <p className="text-gray-600">
-                    {value.description}
-                  </p>
-                </div>
+                <h3 className="text-xl font-bold mb-3">{value.title}</h3>
+                <p className="text-gray-600">{value.description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
       
-      {/* What Makes Us Different Section */}
-      <section className="py-16 bg-primary-700 text-white">
-        <div className="container-custom">
-          <div className="text-center mb-12">
-            <h2 className="mb-4 text-white">What Makes Us Different</h2>
-            <p className="text-white/80 max-w-3xl mx-auto">
-              Our approach to travel is as unique as your journey
+      {/* Our Team Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="container-custom max-w-screen-xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <span className="text-[#14b8a6] font-semibold tracking-wider uppercase">Meet Our Experts</span>
+            <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">
+              <span className="bg-gradient-to-r from-[#9e1687] to-[#14b8a6] text-transparent bg-clip-text">The Team</span> Behind Your Journey
+            </h2>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              Our diverse team of travel experts brings together local knowledge, professional expertise, and a shared passion for creating unforgettable experiences.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-white/10 backdrop-blur-sm p-8 rounded-xl">
-              <div className="text-4xl font-bold text-white mb-4">01</div>
-              <h3 className="text-xl font-bold mb-4 text-white">Local Expertise</h3>
-              <p className="text-white/80">
-                Our guides are locals who share not just their knowledge, but their personal connections to the places you'll visit, providing insights that go beyond any guidebook.
-              </p>
-            </div>
-            
-            <div className="bg-white/10 backdrop-blur-sm p-8 rounded-xl">
-              <div className="text-4xl font-bold text-white mb-4">02</div>
-              <h3 className="text-xl font-bold mb-4 text-white">Tailored Experiences</h3>
-              <p className="text-white/80">
-                We recognize that each traveler is unique. Our tours can be customized to match your interests, pace, and travel style, ensuring your journey is exactly what you want it to be.
-              </p>
-            </div>
-            
-            <div className="bg-white/10 backdrop-blur-sm p-8 rounded-xl">
-              <div className="text-4xl font-bold text-white mb-4">03</div>
-              <h3 className="text-xl font-bold mb-4 text-white">Bilingual Support</h3>
-              <p className="text-white/80">
-                Our team speaks both English and Spanish fluently, allowing us to serve a diverse clientele and ensure clear communication throughout your journey.
-              </p>
-            </div>
-            
-            <div className="bg-white/10 backdrop-blur-sm p-8 rounded-xl">
-              <div className="text-4xl font-bold text-white mb-4">04</div>
-              <h3 className="text-xl font-bold mb-4 text-white">AI-Enhanced Planning</h3>
-              <p className="text-white/80">
-                Our innovative AI travel assistant helps personalize your itinerary based on your preferences, making trip planning more efficient while maintaining the human touch.
-              </p>
-            </div>
-            
-            <div className="bg-white/10 backdrop-blur-sm p-8 rounded-xl">
-              <div className="text-4xl font-bold text-white mb-4">05</div>
-              <h3 className="text-xl font-bold mb-4 text-white">Exclusive Access</h3>
-              <p className="text-white/80">
-                Years of operating in the region have given us access to experiences, locations, and people that aren't available through typical travel agencies.
-              </p>
-            </div>
-            
-            <div className="bg-white/10 backdrop-blur-sm p-8 rounded-xl">
-              <div className="text-4xl font-bold text-white mb-4">06</div>
-              <h3 className="text-xl font-bold mb-4 text-white">24/7 Support</h3>
-              <p className="text-white/80">
-                Travel doesn't follow a 9-to-5 schedule, and neither do we. Our team is available around the clock to assist with any needs that arise during your journey.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-      
-      {/* Meet Our Team Section */}
-      <section className="py-16 bg-white">
-        <div className="container-custom">
-          <div className="text-center mb-12">
-            <h2 className="mb-4">Meet Our Team</h2>
-            <p className="text-gray-600 max-w-3xl mx-auto">
-              The passionate travel experts behind your extraordinary journeys
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {teamMembers.map((member, index) => (
-              <div key={index} className="card overflow-hidden">
-                <div className="h-80 bg-gray-200 relative">
-                  {/* This would be replaced with an actual image */}
-                  <div className="absolute inset-0 flex items-center justify-center text-gray-500">
-                    {member.name} Photo
-                  </div>
+              <div key={index} className="bg-white rounded-xl overflow-hidden shadow-lg group hover:shadow-xl transition duration-300 border border-gray-100">
+                <div className="relative h-72 bg-gradient-to-r from-[#9e1687]/10 to-[#14b8a6]/10">
+                  <Image 
+                    src={getAssetPath(member.image)} 
+                    alt={member.name} 
+                    fill 
+                    className="object-cover object-center group-hover:scale-105 transition duration-500"
+                  />
                 </div>
                 <div className="p-6">
                   <h3 className="text-xl font-bold mb-1">{member.name}</h3>
-                  <p className="text-primary-600 font-medium mb-4">{member.position}</p>
-                  <p className="text-gray-600">
-                    {member.bio}
-                  </p>
+                  <p className="text-[#14b8a6] font-medium mb-3">{member.position}</p>
+                  <p className="text-gray-600 text-sm">{member.bio}</p>
                 </div>
               </div>
             ))}
@@ -253,105 +218,138 @@ export default function AboutPage() {
       </section>
       
       {/* Testimonials Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="container-custom">
-          <div className="text-center mb-12">
-            <h2 className="mb-4">What Our Travelers Say</h2>
-            <p className="text-gray-600 max-w-3xl mx-auto">
-              Real experiences from our valued customers
+      <section className="py-20 bg-white relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-[#9e1687]/5 to-[#14b8a6]/5"></div>
+        <div className="container-custom max-w-screen-xl mx-auto px-4 relative z-10">
+          <div className="text-center mb-16">
+            <span className="text-[#14b8a6] font-semibold tracking-wider uppercase">Happy Travelers</span>
+            <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">
+              <span className="bg-gradient-to-r from-[#9e1687] to-[#14b8a6] text-transparent bg-clip-text">Testimonials</span> From Our Clients
+            </h2>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              Don't just take our word for it. Hear what travelers have to say about their experiences with Saladino Travel.
             </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-xl shadow-sm">
-              <div className="flex text-primary-500 mb-4">
+            {/* Testimonial 1 */}
+            <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition duration-300">
+              <div className="flex items-center text-yellow-400 mb-4">
                 {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  <svg key={i} className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                   </svg>
                 ))}
               </div>
-              <p className="italic text-gray-600 mb-6">
-                "Our tour with Saladino Travel exceeded all expectations. Our guide was incredibly knowledgeable about Turkish history and took us to places we never would have discovered on our own. The accommodations were perfect and the entire trip was seamless."
+              <p className="text-gray-600 mb-6 italic">
+                "Our tour of Istanbul with Saladino Travel was nothing short of magical. Our guide Ayşe was knowledgeable, friendly, and went above and beyond to make our experience special. We saw places we would never have found on our own."
               </p>
-              <div>
-                <p className="font-bold">Carlos & Maria Rodriguez</p>
-                <p className="text-gray-500">Madrid, Spain</p>
+              <div className="flex items-center">
+                <div className="w-12 h-12 rounded-full overflow-hidden mr-4 bg-gradient-to-r from-[#9e1687]/10 to-[#14b8a6]/10">
+                  <Image
+                    src={getAssetPath("/images/testimonials/testimonial-1.jpg")}
+                    alt="Sarah Johnson"
+                    width={48}
+                    height={48}
+                    className="object-cover"
+                  />
+                </div>
+                <div>
+                  <h4 className="font-bold">Sarah Johnson</h4>
+                  <p className="text-sm text-gray-500">New York, USA</p>
+                </div>
               </div>
             </div>
             
-            <div className="bg-white p-8 rounded-xl shadow-sm">
-              <div className="flex text-primary-500 mb-4">
+            {/* Testimonial 2 */}
+            <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition duration-300">
+              <div className="flex items-center text-yellow-400 mb-4">
                 {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  <svg key={i} className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                   </svg>
                 ))}
               </div>
-              <p className="italic text-gray-600 mb-6">
-                "I was hesitant about booking a combined Turkey-Dubai tour, but Saladino Travel made the transition between countries effortless. The contrast between the two cultures was fascinating, and having Spanish-speaking guides made the experience even more enjoyable for our family."
+              <p className="text-gray-600 mb-6 italic">
+                "The Dubai Desert Safari was the highlight of our trip. The attention to detail was impressive, from the luxury transportation to the traditional dinner under the stars. Worth every penny for such a premium experience."
               </p>
-              <div>
-                <p className="font-bold">Ana Gómez</p>
-                <p className="text-gray-500">Buenos Aires, Argentina</p>
+              <div className="flex items-center">
+                <div className="w-12 h-12 rounded-full overflow-hidden mr-4 bg-gradient-to-r from-[#9e1687]/10 to-[#14b8a6]/10">
+                  <Image
+                    src={getAssetPath("/images/testimonials/testimonial-2.jpg")}
+                    alt="David Chen"
+                    width={48}
+                    height={48}
+                    className="object-cover"
+                  />
+                </div>
+                <div>
+                  <h4 className="font-bold">David Chen</h4>
+                  <p className="text-sm text-gray-500">Singapore</p>
+                </div>
               </div>
             </div>
             
-            <div className="bg-white p-8 rounded-xl shadow-sm">
-              <div className="flex text-primary-500 mb-4">
+            {/* Testimonial 3 */}
+            <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition duration-300">
+              <div className="flex items-center text-yellow-400 mb-4">
                 {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  <svg key={i} className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                   </svg>
                 ))}
               </div>
-              <p className="italic text-gray-600 mb-6">
-                "As a solo female traveler, safety was my primary concern. The team at Saladino Travel made me feel secure while still providing an adventurous experience. The hot air balloon ride over Cappadocia arranged by them was the highlight of my trip!"
+              <p className="text-gray-600 mb-6 italic">
+                "As a solo female traveler, I was concerned about visiting Turkey alone. Saladino Travel made me feel safe and welcome throughout my journey. They customized the perfect itinerary that allowed me to experience both popular sites and off-the-beaten-path locations."
               </p>
-              <div>
-                <p className="font-bold">Lucía Fernández</p>
-                <p className="text-gray-500">Mexico City, Mexico</p>
+              <div className="flex items-center">
+                <div className="w-12 h-12 rounded-full overflow-hidden mr-4 bg-gradient-to-r from-[#9e1687]/10 to-[#14b8a6]/10">
+                  <Image
+                    src={getAssetPath("/images/testimonials/testimonial-3.jpg")}
+                    alt="Emma Wallace"
+                    width={48}
+                    height={48}
+                    className="object-cover"
+                  />
+                </div>
+                <div>
+                  <h4 className="font-bold">Emma Wallace</h4>
+                  <p className="text-sm text-gray-500">London, UK</p>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-      
-      {/* Partners Section */}
-      <section className="py-16 bg-white">
-        <div className="container-custom">
-          <div className="text-center mb-12">
-            <h2 className="mb-4">Our Partners</h2>
-            <p className="text-gray-600 max-w-3xl mx-auto">
-              We collaborate with premium hotels, airlines, and local experiences to deliver exceptional journeys
-            </p>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {/* These would be replaced with actual partner logos */}
-            {[...Array(8)].map((_, index) => (
-              <div key={index} className="h-24 bg-gray-100 rounded flex items-center justify-center text-gray-400">
-                Partner Logo {index + 1}
-              </div>
-            ))}
+          <div className="text-center mt-12">
+            <Link href="/contact" className="inline-flex items-center text-[#9e1687] font-semibold hover:text-[#14b8a6] transition duration-300">
+              Share your experience with us
+              <svg className="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </Link>
           </div>
         </div>
       </section>
       
       {/* CTA Section */}
-      <section className="py-16 bg-primary-600 text-white">
-        <div className="container-custom text-center">
-          <h2 className="mb-6 text-white">Ready to Experience the Magic of Turkey and Dubai?</h2>
-          <p className="text-white/90 text-lg max-w-3xl mx-auto mb-8">
-            Let our team of travel experts craft the perfect journey for you
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/tours" className="btn bg-white text-primary-600 hover:bg-gray-100">
-              Explore Our Tours
-            </Link>
-            <Link href="/contact" className="btn border-2 border-white text-white hover:bg-white/20">
-              Contact Us
-            </Link>
+      <section className="py-20 bg-gradient-to-r from-[#9e1687] to-[#14b8a6] text-white">
+        <div className="container-custom max-w-screen-xl mx-auto px-4">
+          <div className="text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Experience the Magic with Us?</h2>
+            <p className="text-xl opacity-90 mb-10 max-w-2xl mx-auto">
+              Let's create memories that will last a lifetime. Start planning your journey today.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Link href="/tours" className="btn-white px-8 py-4 rounded-md bg-white text-[#9e1687] font-semibold hover:bg-opacity-90 transition duration-300 inline-flex items-center justify-center shadow-lg">
+                Browse Our Tours
+                <svg className="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </Link>
+              <Link href="/contact" className="btn-outline px-8 py-4 rounded-md border-2 border-white text-white font-semibold hover:bg-white hover:bg-opacity-10 transition duration-300 inline-flex items-center justify-center">
+                Contact Our Team
+              </Link>
+            </div>
           </div>
         </div>
       </section>

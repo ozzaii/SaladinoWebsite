@@ -1,72 +1,95 @@
-import '@/styles/globals.css';
-import { Inter, Playfair_Display } from 'next/font/google';
+import './globals.css';
 import type { Metadata } from 'next';
-import Header from '@/components/Header';
+import { Montserrat } from 'next/font/google';
+import Image from 'next/image';
+import Link from 'next/link';
+import { getAssetPath } from '@/utils/paths';
+import { ChatProvider } from '@/context/ChatContext';
 import Footer from '@/components/Footer';
+import FloatingChatButton from '@/components/shared/FloatingChatButton';
 
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-inter',
-});
-
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-playfair',
-});
+const montserrat = Montserrat({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: {
-    template: '%s | Saladino Travel',
-    default: 'Saladino Travel - Luxury Tours in Turkey & Dubai',
-  },
-  description: 'Experience the magic of Turkey and Dubai with our premium guided tours, featuring expert local guides and luxury accommodations.',
-  icons: {
-    icon: [
-      { url: '/favicon.ico' },
-      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-    ],
-    apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-    ],
-  },
-  manifest: '/site.webmanifest',
-  openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    siteName: 'Saladino Travel',
-    images: [
-      {
-        url: '/images/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Saladino Travel - Luxury Tours',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    creator: '@SaladinoTravel',
-    site: '@SaladinoTravel',
-  },
+  title: 'Saladino Travel - Experiencias Turcas',
+  description: 'Viajes y tours personalizados para hispanohablantes en Turquía y Dubái.',
 };
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
+  const navigationLinks = [
+    { href: '/', label: 'Inicio' },
+    { href: '/tours', label: 'Tours' },
+    { href: '/destinations', label: 'Destinos' },
+    { href: '/about', label: 'Sobre Nosotros' },
+    { href: '/contact', label: 'Contacto' },
+  ];
+
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
-      <body className="antialiased flex flex-col min-h-screen">
-        <Header />
-        <main className="flex-grow">
-          {children}
-        </main>
-        <Footer />
+    <html lang="en">
+      <body className={montserrat.className}>
+        <ChatProvider>
+          {/* Header */}
+          <header className="fixed w-full bg-white shadow-sm z-50">
+            <div className="container mx-auto px-6 md:px-10">
+              <div className="flex justify-between items-center h-20">
+                {/* Logo */}
+                <Link href="/" className="flex items-center">
+                  <div className="relative w-48 h-12">
+                    <Image 
+                      src={getAssetPath('/images/saladino-travel-logo.png')}
+                      alt="Saladino Travel Logo"
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                </Link>
+                
+                {/* Navigation */}
+                <nav className="hidden md:flex items-center space-x-8">
+                  {navigationLinks.map((link) => (
+                    <Link 
+                      key={link.href} 
+                      href={link.href}
+                      className="text-gray-700 hover:text-[#9e1687] transition-colors duration-300"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                  
+                  <Link 
+                    href="/booking"
+                    className="px-4 py-2 bg-[#9e1687] text-white font-medium rounded-lg hover:bg-[#8a1275] transition-all duration-300"
+                  >
+                    Reservar
+                  </Link>
+                </nav>
+                
+                {/* Mobile Menu Button */}
+                <button className="md:hidden text-gray-700">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </header>
+          
+          {/* Main Content */}
+          <main className="pt-20">
+            {children}
+          </main>
+          
+          {/* Footer with Chat Button */}
+          <Footer />
+          
+          {/* Add the floating chat button directly in the layout */}
+          <FloatingChatButton />
+        </ChatProvider>
       </body>
     </html>
   );
-} 
+}

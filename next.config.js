@@ -1,35 +1,32 @@
 /** @type {import('next').NextConfig} */
+
+const isProd = process.env.NODE_ENV === 'production';
+
 const nextConfig = {
-  // Ensure that output is set to 'export' for static site generation
+  // Output as static HTML files for easy deployment
   output: 'export',
   
-  // Set the base path for GitHub Pages deployment
-  basePath: '/SaladinoWebsite',
+  // For GitHub Pages deployment - only in production
+  basePath: isProd ? '/SaladinoWebsite' : '',
+  assetPrefix: isProd ? '/SaladinoWebsite' : '',
   
-  // Set the asset prefix for GitHub Pages deployment
-  assetPrefix: '/SaladinoWebsite',
-  
-  // GitHub Pages doesn't support trailing slashes, so we disable them
+  // GitHub Pages doesn't handle trailing slash well
   trailingSlash: false,
   
-  // Enable static image imports for Next.js
+  // Enable static image imports
   images: {
     unoptimized: true,
   },
-
-  // Bypass TypeScript checks during build
+  
+  // Don't fail build with type errors
   typescript: {
-    // !! WARN !!
-    // Dangerously allow production builds to successfully complete even if
-    // your project has type errors.
-    // !! WARN !!
+    // Still process type checks but don't block the build
     ignoreBuildErrors: true,
   },
   
-  // Also ignore ESLint errors
+  // Don't fail build with ESLint errors
   eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
+    // Still process eslint checks but don't block the build
     ignoreDuringBuilds: true,
   },
 };

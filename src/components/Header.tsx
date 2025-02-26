@@ -1,143 +1,151 @@
 "use client"
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getAssetPath } from '@/utils/paths';
 
-const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [imgError, setImgError] = useState(false);
+interface HeaderProps {
+  scrolled?: boolean;
+}
 
+export default function Header({ scrolled = false }: HeaderProps) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeLink, setActiveLink] = useState('/');
+  
+  // Set active link based on pathname
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    if (typeof window !== 'undefined') {
+      setActiveLink(window.location.pathname);
+    }
   }, []);
 
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const navItems = [
+    { name: 'Tours', path: '/tours' },
+    { name: 'Destinations', path: '/destinations' },
+    { name: 'About', path: '/about' },
+    { name: 'Contact', path: '/contact' },
+    { name: 'Booking', path: '/booking' },
+    { 
+      name: 'AI Assistant', 
+      path: '/ai-assistant',
+      special: true 
+    },
+  ];
+
   return (
-    <header 
-      className={`fixed w-full z-50 transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-white/95 backdrop-blur-sm shadow-md py-3' 
-          : 'bg-transparent py-5'
-      }`}
-    >
-      <div className="container-custom mx-auto px-4 flex justify-between items-center">
-        {/* Logo */}
-        <Link href="/" className="relative flex items-center">
-          {imgError ? (
-            <div className="text-2xl font-display font-bold">
-              <span className="text-[#9e1687]">Saladino</span>
-              <span className="text-[#14b8a6]">Travel</span>
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      scrolled ? 'bg-white/95 backdrop-blur-sm shadow-lg py-3' : 'bg-transparent py-6'
+    }`}>
+      <div className="container mx-auto px-6 md:px-10">
+        <nav className="flex justify-between items-center">
+          {/* Logo */}
+          <Link href="/" className="relative z-10 group" onClick={() => setActiveLink('/')}>
+            <div className="relative h-12 w-44 overflow-hidden">
+              <Image 
+                src={getAssetPath("/images/saladino-travel-logo.png")} 
+                alt="Saladino Travel" 
+                fill
+                className="object-contain transition-transform duration-500 group-hover:scale-105" 
+                priority
+              />
             </div>
-          ) : (
-            <Image 
-              src={getAssetPath("/images/saladino-travel-logo.svg")} 
-              alt="Saladino Travel" 
-              width={180} 
-              height={70}
-              className="object-contain h-12 md:h-14 w-auto transition-transform hover:scale-105"
-              priority
-              onError={() => setImgError(true)}
-            />
-          )}
-        </Link>
-
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-1">
-          {[
-            { label: 'Home', href: '/' },
-            { label: 'Tours', href: '/tours' },
-            { label: 'Destinations', href: '/destinations' },
-            { label: 'About', href: '/about' },
-            { label: 'Contact', href: '/contact' },
-            { label: 'AI Assistant', href: '/ai-assistant' },
-          ].map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className="px-4 py-2 text-gray-700 hover:text-primary-600 rounded-md font-medium transition-colors relative group"
-            >
-              {item.label}
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 transition-all duration-300 group-hover:w-full"></span>
-            </Link>
-          ))}
-          <button
-            className="px-4 py-2 text-gray-700 hover:text-primary-600 rounded-md font-medium transition-colors"
-          >
-            ES/EN
-          </button>
-          <Link
-            href="/booking"
-            className="ml-4 px-6 py-2.5 bg-primary-600 text-white rounded-lg font-semibold transition-all hover:bg-primary-700 hover:shadow-md transform hover:-translate-y-0.5"
-          >
-            Book Now
+            {!scrolled && (
+              <div 
+                className="absolute -inset-4 bg-white/10 rounded-full filter blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500 -z-10"
+              />
+            )}
           </Link>
+          
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-6">
+            {navItems.map((item) => (
+              <Link 
+                key={item.name}
+                href={item.path}
+                onClick={() => setActiveLink(item.path)}
+                className={`relative group ${
+                  item.special 
+                    ? 'py-2 px-4 rounded-full bg-gradient-to-r from-[#9e1687] to-[#14b8a6] text-white font-medium'
+                    : activeLink === item.path 
+                      ? 'text-gray-900 font-medium' 
+                      : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                {item.name}
+                {!item.special && activeLink === item.path && (
+                  <div
+                    className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-[#9e1687] to-[#14b8a6]"
+                  />
+                )}
+                {!item.special && activeLink !== item.path && (
+                  <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-[#9e1687] to-[#14b8a6] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+                )}
+                {item.special && (
+                  <div className="absolute inset-0 rounded-full bg-white/20 scale-0 group-hover:scale-100 transition-transform duration-300" />
+                )}
+              </Link>
+            ))}
+          </div>
+          
+          {/* Improved Mobile Menu Button with better clickability */}
+          <button 
+            className="md:hidden relative z-[60] p-4 cursor-pointer focus:outline-none touch-manipulation"
+            onClick={toggleMobileMenu}
+            aria-label="Toggle menu"
+            aria-expanded={mobileMenuOpen}
+            style={{ touchAction: 'manipulation' }}
+          >
+            <div className={`flex flex-col justify-between w-7 h-5 transform transition-all duration-300 ${mobileMenuOpen ? 'rotate-180' : ''}`}>
+              <span className={`h-0.5 w-7 ${scrolled || mobileMenuOpen ? 'bg-[#9e1687]' : 'bg-white'} transform transition-transform duration-300 origin-center ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+              <span className={`h-0.5 w-7 ${scrolled || mobileMenuOpen ? 'bg-[#9e1687]' : 'bg-white'} transition-all duration-300 ${mobileMenuOpen ? 'opacity-0' : 'opacity-100'}`}></span>
+              <span className={`h-0.5 w-7 ${scrolled || mobileMenuOpen ? 'bg-[#9e1687]' : 'bg-white'} transform transition-transform duration-300 origin-center ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+            </div>
+          </button>
         </nav>
-
-        {/* Mobile Menu Button */}
-        <button
-          className="md:hidden text-gray-700 hover:text-primary-600 transition-colors"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
-        >
-          {isMenuOpen ? (
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-7 h-7">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-7 h-7">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          )}
-        </button>
       </div>
-
-      {/* Mobile Navigation */}
-      <div
-        className={`md:hidden absolute top-full left-0 w-full bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
-          isMenuOpen ? 'translate-y-0' : '-translate-y-full'
-        }`}
+      
+      {/* Mobile Menu with CSS transitions instead of Framer Motion */}
+      <div 
+        className={`md:hidden fixed inset-0 top-0 pt-24 bg-white/98 backdrop-blur-md z-[55] p-6 shadow-xl transition-opacity duration-300 ${mobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+        style={{
+          animation: mobileMenuOpen ? 'fadeIn 0.3s ease-in-out' : 'none',
+          pointerEvents: mobileMenuOpen ? 'auto' : 'none'
+        }}
       >
-        <div className="container-custom mx-auto px-4 py-4 flex flex-col space-y-2">
-          {[
-            { label: 'Home', href: '/' },
-            { label: 'Tours', href: '/tours' },
-            { label: 'Destinations', href: '/destinations' },
-            { label: 'About', href: '/about' },
-            { label: 'Contact', href: '/contact' },
-            { label: 'AI Assistant', href: '/ai-assistant' },
-          ].map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className="px-4 py-3 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md font-medium transition-colors"
-              onClick={() => setIsMenuOpen(false)}
+        <div className="flex flex-col space-y-6">
+          {navItems.map((item) => (
+            <Link 
+              key={item.name}
+              href={item.path}
+              onClick={() => {
+                setActiveLink(item.path);
+                setMobileMenuOpen(false);
+              }}
+              className={`text-lg ${
+                item.special 
+                  ? 'py-3 px-4 rounded-full bg-gradient-to-r from-[#9e1687] to-[#14b8a6] text-white font-medium text-center'
+                  : activeLink === item.path 
+                    ? 'text-gray-900 font-medium' 
+                    : 'text-gray-600'
+              }`}
             >
-              {item.label}
+              {item.name}
             </Link>
           ))}
-          <button
-            className="px-4 py-3 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md font-medium transition-colors"
-          >
-            ES/EN
-          </button>
-          <Link
-            href="/booking"
-            className="mt-4 px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold text-center transition-all hover:bg-primary-700"
-            onClick={() => setIsMenuOpen(false)}
-          >
-            Book Now
-          </Link>
         </div>
       </div>
+      
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </header>
   );
-};
-
-export default Header; 
+} 

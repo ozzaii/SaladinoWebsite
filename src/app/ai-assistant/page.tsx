@@ -1,7 +1,25 @@
+"use client"
+
 import React from 'react';
-import { Metadata } from 'next';
-import ChatWrapper from '@/components/shared/ChatWrapper';
 import Image from 'next/image';
+import { getAssetPath } from '@/utils/paths';
+import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import { FaGlobeAmericas, FaImage, FaBolt, FaMapMarkedAlt, FaRegCalendarAlt, FaHistory } from 'react-icons/fa';
+
+// Import the AIAssistant component with dynamic import to ensure it's client-side only
+const AIAssistant = dynamic(() => import('@/components/AIAssistant'), {
+  ssr: false,
+});
+
+// Import the VideoBackground component with dynamic import to ensure it's client-side only
+const VideoBackground = dynamic(() => import('@/components/shared/VideoBackground'), {
+  ssr: false,
+});
+
+// Define brand colors directly to avoid CSS variable issues
+const brandPurple = '#9e1687';
+const brandTeal = '#14b8a6';
 
 // Note: To use the Gemini 2.0 Flash API:
 // 1. Create an API key from Google AI Studio (https://ai.google.dev/)
@@ -9,78 +27,184 @@ import Image from 'next/image';
 // 3. Install the @google/generative-ai package: npm install @google/generative-ai
 // 4. Create a client component that uses the Gemini API
 
-export const metadata: Metadata = {
-  title: 'AI Travel Assistant | Saladino Travel',
-  description: 'Get instant answers to your travel questions about Turkey, Dubai, Greece, and Egypt with our AI-powered travel assistant using Google Gemini 2.0 Flash.',
-};
-
 export default function AIAssistantPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between bg-gradient-to-b from-indigo-50 via-white to-indigo-50">
-      <div className="w-full max-w-5xl mx-auto pt-16 pb-16 px-4 sm:px-6">
-        <div className="text-center mb-8">
-          <div className="inline-block mb-4">
-            <div className="flex items-center justify-center space-x-3 bg-white px-5 py-2 rounded-full shadow-md">
-              <svg className="w-8 h-8" viewBox="0 0 24 24" fill="#4285F4" xmlns="http://www.w3.org/2000/svg">
-                <path d="M22.1 12c0-.55-.04-1.09-.12-1.61h-9.67v3.05h5.52a4.71 4.71 0 0 1-2.04 3.09v2.58h3.31c1.94-1.78 3.05-4.4 3.05-7.11z"/>
-                <path d="m12 22.93c2.76 0 5.08-.91 6.78-2.48l-3.31-2.58c-.92.62-2.1.98-3.47.98-2.66 0-4.92-1.8-5.73-4.22H2.76v2.66a10.21 10.21 0 0 0 9.24 5.63z" fill="#34A853"/>
-                <path d="M6.27 14.63a6.21 6.21 0 0 1-.32-1.95c0-.68.12-1.33.32-1.95V8.07H2.76A10.2 10.2 0 0 0 1.8 12c0 1.35.25 2.69.76 3.93l3.71-2.3z" fill="#FBBC05"/>
-                <path d="M12 5.42c1.5 0 2.85.51 3.91 1.52l2.94-2.94C16.97 2.33 14.65 1.3 12 1.3a10.2 10.2 0 0 0-9.24 5.77l3.51 2.73c.81-2.42 3.07-4.38 5.73-4.38z" fill="#EA4335"/>
-              </svg>
-              <span className="text-lg font-semibold bg-gradient-to-r from-brand-purple to-brand-teal bg-clip-text text-transparent">
-                Powered by Gemini 2.0 Flash
-              </span>
+    <main className="flex min-h-screen flex-col bg-white">
+      {/* Hero Section with Video Background */}
+      <div className="relative w-full h-[60vh] overflow-hidden">
+        <VideoBackground />
+        
+        <div className="absolute inset-0 flex items-center justify-center z-10 px-4 bg-black/40">
+          <div className="text-center max-w-4xl">
+            <div className="inline-block mb-6 px-6 py-3 rounded-full bg-white/90 shadow-xl transform hover:scale-105 transition-transform duration-300">
+              <div className="flex items-center space-x-3">
+                <div className="bg-gradient-to-r from-[#9e1687] to-[#14b8a6] h-10 w-10 rounded-full flex items-center justify-center">
+                  <FaGlobeAmericas className="text-white h-5 w-5" />
+                </div>
+                <span className="text-lg font-semibold bg-gradient-to-r from-[#9e1687] to-[#14b8a6] bg-clip-text text-transparent">
+                  Powered by Gemini 2.0 Flash
+                </span>
+              </div>
             </div>
+            
+            <h1 className="text-5xl md:text-6xl font-display font-bold mb-6 text-white drop-shadow-md">
+              Meet Atlas:<br />Your Travel Consultant
+            </h1>
+            
+            <p className="text-xl md:text-2xl text-white/90 max-w-2xl mx-auto font-light mb-8">
+              Discover distinctive journeys through Turkey, Dubai, Greece, and Egypt with personalized guidance from our travel intelligence system.
+            </p>
+            
+            <a href="#chat" className="inline-block px-8 py-4 bg-gradient-to-r from-[#9e1687] to-[#14b8a6] text-white font-bold rounded-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
+              Consult with Atlas
+            </a>
           </div>
-          <h1 className="text-4xl md:text-5xl font-display font-bold mb-4 bg-gradient-to-r from-brand-purple to-brand-teal bg-clip-text text-transparent">
-            Your AI Travel Companion
-          </h1>
-          <p className="max-w-2xl mx-auto text-xl text-gray-600">
-            Ask me anything about our tours to Turkey, Dubai, Greece, or Egypt, and I'll provide personalized recommendations with beautiful visuals.
-          </p>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl p-5 shadow-md border border-gray-100 flex flex-col items-center text-center">
-            <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mb-3">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-brand-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-              </svg>
+      </div>
+      
+      {/* Main Content */}
+      <div className="w-full max-w-6xl mx-auto -mt-20 px-4 sm:px-6 lg:px-8 relative z-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          <div className="bg-white rounded-xl p-6 shadow-xl border border-gray-200 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+            <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mb-4">
+              <FaMapMarkedAlt className="h-8 w-8 text-[#9e1687]" />
             </div>
-            <h3 className="text-xl font-bold mb-2">Destination Insights</h3>
-            <p className="text-gray-600">Get expert information about the best places to visit and hidden gems in our destinations.</p>
+            <h3 className="text-xl font-bold mb-3 bg-gradient-to-r from-[#9e1687] to-[#14b8a6] bg-clip-text text-transparent">Destination Intelligence</h3>
+            <p className="text-gray-700">
+              Access nuanced insights on regional culture, architecture, cuisine, and accommodation options across Turkey, Dubai, Greece, and Egypt.
+            </p>
           </div>
           
-          <div className="bg-white rounded-xl p-5 shadow-md border border-gray-100 flex flex-col items-center text-center">
-            <div className="w-16 h-16 rounded-full bg-teal-100 flex items-center justify-center mb-3">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-brand-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
-              </svg>
+          <div className="bg-white rounded-xl p-6 shadow-xl border border-gray-200 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+            <div className="w-16 h-16 rounded-full bg-teal-100 flex items-center justify-center mb-4">
+              <FaImage className="h-8 w-8 text-[#14b8a6]" />
             </div>
-            <h3 className="text-xl font-bold mb-2">Visual Responses</h3>
-            <p className="text-gray-600">See beautiful images of the places we discuss, powered by advanced AI image search.</p>
+            <h3 className="text-xl font-bold mb-3 bg-gradient-to-r from-[#14b8a6] to-[#9e1687] bg-clip-text text-transparent">Visual Exploration</h3>
+            <p className="text-gray-700">
+              Request visual references of specific destinations, historical sites, or accommodations to inform your travel decisions.
+            </p>
           </div>
           
-          <div className="bg-white rounded-xl p-5 shadow-md border border-gray-100 flex flex-col items-center text-center">
-            <div className="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center mb-3">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+          <div className="bg-white rounded-xl p-6 shadow-xl border border-gray-200 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+            <div className="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center mb-4">
+              <FaRegCalendarAlt className="h-8 w-8 text-indigo-600" />
             </div>
-            <h3 className="text-xl font-bold mb-2">Instant Answers</h3>
-            <p className="text-gray-600">Get fast, accurate responses to all your travel questions using cutting-edge AI technology.</p>
+            <h3 className="text-xl font-bold mb-3 bg-gradient-to-r from-indigo-600 to-[#14b8a6] bg-clip-text text-transparent">Itinerary Design</h3>
+            <p className="text-gray-700">
+              Receive tailored itinerary recommendations considering your interests, time constraints, and cultural preferences.
+            </p>
           </div>
         </div>
         
-        <div className="bg-white rounded-xl shadow-xl p-2 md:p-4 h-[600px] border border-gray-200 overflow-hidden">
-          <ChatWrapper />
+        {/* Chat Interface */}
+        <div id="chat" className="bg-white rounded-xl shadow-2xl p-1 md:p-2 mb-12 overflow-hidden border border-gray-200 transform hover:shadow-2xl transition-all duration-300">
+          <AIAssistant />
         </div>
         
-        <div className="mt-8 text-center">
+        {/* Testimonials */}
+        <div className="mb-12">
+          <h2 className="text-3xl font-display font-bold mb-8 text-center">Traveler Conversations</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-slate-50 rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-start mb-4">
+                <Image 
+                  src={getAssetPath("/images/testimonials/latin-american-woman.jpg")} 
+                  alt="Traveler" 
+                  width={60} 
+                  height={60} 
+                  className="rounded-full mr-4 object-cover border-2 border-purple-300"
+                />
+                <div>
+                  <p className="font-medium text-lg">Sophia R.</p>
+                  <p className="text-gray-500 text-sm">Planning a family journey</p>
+                </div>
+              </div>
+              <p className="text-gray-700">"Atlas provided excellent recommendations for family-friendly activities in Istanbul, including optimal visiting times and cultural insights that enhanced our experience significantly."</p>
+            </div>
+            
+            <div className="bg-slate-50 rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300">
+              <div className="flex items-start mb-4">
+                <Image 
+                  src={getAssetPath("/images/testimonials/latin-american-man.jpg")} 
+                  alt="Traveler" 
+                  width={60} 
+                  height={60} 
+                  className="rounded-full mr-4 object-cover border-2 border-teal-300"
+                />
+                <div>
+                  <p className="font-medium text-lg">Carlos M.</p>
+                  <p className="text-gray-500 text-sm">Solo traveler</p>
+                </div>
+              </div>
+              <p className="text-gray-700">"The comprehensive 10-day itinerary Atlas created for my Turkish adventure perfectly balanced historical exploration with outdoor experiences, including exceptional culinary recommendations."</p>
+            </div>
+          </div>
+        </div>
+        
+        {/* FAQ Section */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-display font-bold mb-8 text-center">Frequently Asked Questions</h2>
+          
+          <div className="space-y-4">
+            <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+              <h3 className="text-lg font-bold mb-2">How accurate is the travel information?</h3>
+              <p className="text-gray-600">Atlas is powered by Google's Gemini 2.0 Flash model and continuously updated with accurate information about our destinations. Our travel experts regularly validate the recommendations to ensure reliability.</p>
+            </div>
+            
+            <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+              <h3 className="text-lg font-bold mb-2">Can I book directly through Atlas?</h3>
+              <p className="text-gray-600">While Atlas provides detailed information about tours and approximate pricing, final bookings are arranged through our travel consultants to ensure your specific requirements are fully addressed.</p>
+            </div>
+            
+            <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+              <h3 className="text-lg font-bold mb-2">What regions does Atlas specialize in?</h3>
+              <p className="text-gray-600">Atlas has specialized knowledge of Turkey, Dubai, Greece, and Egypt, including detailed information about attractions, accommodations, cultural context, and travel logistics within these regions.</p>
+            </div>
+          </div>
+        </div>
+        
+        {/* CTA */}
+        <div className="mb-16 bg-gradient-to-r from-[#9e1687] to-[#14b8a6] rounded-xl p-8 text-center text-white shadow-xl transform hover:scale-[1.01] transition-transform duration-300 relative overflow-hidden">
+          <div className="absolute inset-0 bg-black/10 z-0"></div>
+          
+          {/* Subtle background pattern */}
+          <div className="absolute inset-0 opacity-10 z-0">
+            <div className="absolute inset-0" style={{ 
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.2'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+              backgroundSize: '15px 15px'
+            }}></div>
+          </div>
+          
+          <div className="relative z-10">
+            <div className="mx-auto w-20 h-1 bg-white/40 rounded-full mb-6"></div>
+            <h2 className="text-3xl font-display font-bold mb-4">Ready to Plan Your Journey?</h2>
+            <p className="text-xl mb-8 max-w-2xl mx-auto">Consult with Atlas about your travel aspirations or connect with our travel experts for a personalized consultation.</p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Link href="#chat" className="bg-white/15 hover:bg-white/25 backdrop-blur-sm px-8 py-3 rounded-lg font-bold transition-all duration-300 border border-white/30">
+                Consult with Atlas
+              </Link>
+              <Link href="/contact" className="bg-transparent border-2 border-white px-8 py-3 rounded-lg font-bold hover:bg-white/10 transition-all">
+                Contact Expert
+              </Link>
+            </div>
+          </div>
+        </div>
+        
+        <div className="mb-8 text-center">
+          <div className="flex justify-center mb-4">
+            <Image
+              src={getAssetPath("/images/saladino-travel-logo.png")}
+              alt="Saladino Travel"
+              width={120}
+              height={40}
+              className="h-auto"
+            />
+          </div>
           <p className="text-gray-500 italic">
-            "Our AI assistant is powered by Google's Gemini 2.0 Flash — the most advanced conversational AI available for travel planning."
+            "Atlas continuously refines its knowledge to provide increasingly personalized travel recommendations."
           </p>
-          <div className="mt-4 flex items-center justify-center space-x-1 text-xs text-gray-400">
+          <div className="mt-4 flex items-center justify-center space-x-2 text-xs text-gray-400">
             <span>Saladino Travel</span>
             <span>•</span>
             <span>Gemini 2.0 Flash</span>

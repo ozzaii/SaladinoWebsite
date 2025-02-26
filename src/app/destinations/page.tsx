@@ -1,8 +1,9 @@
 import React from 'react';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
 import { Metadata } from 'next';
+import Image from 'next/image';
+import { getAssetPath } from '@/utils/paths';
 
 export const metadata: Metadata = {
   title: 'Destinations | Saladino Travel',
@@ -45,7 +46,7 @@ export default function DestinationsPage() {
       name: 'Athens',
       country: 'Greece',
       description: 'The cradle of Western civilization, Athens is a city where ancient history meets modern vibrancy, from the iconic Acropolis to charming traditional neighborhoods.',
-      image: '/images/destinations/istanbul.jpg', // using Istanbul as placeholder
+      image: '/images/destinations/antalya.jpg',
       highlights: [
         'Acropolis & Parthenon',
         'Plaka District',
@@ -59,7 +60,7 @@ export default function DestinationsPage() {
       name: 'Santorini',
       country: 'Greece',
       description: 'Famous for its stunning white-washed buildings with blue domes, dramatic cliffs, and spectacular sunsets over the Aegean Sea.',
-      image: '/images/destinations/istanbul.jpg', // using Istanbul as placeholder
+      image: '/images/destinations/pamukkale.jpg',
       highlights: [
         'Oia Sunset Views',
         'Caldera Cruise',
@@ -87,7 +88,7 @@ export default function DestinationsPage() {
       name: 'Abu Dhabi',
       country: 'United Arab Emirates',
       description: 'The capital of the UAE features the magnificent Sheikh Zayed Grand Mosque, Ferrari World, and a blend of traditional and modern architecture.',
-      image: '/images/destinations/istanbul.jpg', // using Istanbul as placeholder
+      image: '/images/destinations/dubai-marina.jpg',
       highlights: [
         'Sheikh Zayed Grand Mosque',
         'Ferrari World',
@@ -101,7 +102,7 @@ export default function DestinationsPage() {
       name: 'Cairo',
       country: 'Egypt',
       description: 'The bustling capital of Egypt, home to the Great Pyramids of Giza, the enigmatic Sphinx, and the treasures of the Egyptian Museum.',
-      image: '/images/destinations/istanbul.jpg', // using Istanbul as placeholder
+      image: '/images/destinations/bali.jpg',
       highlights: [
         'Pyramids of Giza',
         'The Great Sphinx',
@@ -115,7 +116,7 @@ export default function DestinationsPage() {
       name: 'Luxor',
       country: 'Egypt',
       description: 'Often called the world\'s greatest open-air museum, Luxor is home to the incredible Karnak Temple complex and the Valley of the Kings.',
-      image: '/images/destinations/istanbul.jpg', // using Istanbul as placeholder
+      image: '/images/destinations/rome.jpg',
       highlights: [
         'Valley of the Kings',
         'Karnak Temple',
@@ -138,19 +139,18 @@ export default function DestinationsPage() {
 
   return (
     <main className="min-h-screen flex flex-col">
-      <Header />
-      
       {/* Hero Section */}
       <section className="relative h-[50vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-primary-900/70 to-primary-700/50 z-10"></div>
-        <div className="absolute inset-0 bg-gray-300"></div>
-        {/* This would be replaced with an actual image */}
-        {/* <Image 
-          src="/images/destinations-hero.jpg"
-          alt="Explore Our Destinations" 
-          fill 
-          className="object-cover"
-        /> */}
+        <div className="absolute inset-0">
+          <Image 
+            src={getAssetPath("/images/destinations/cappadocia-landscape.jpg")}
+            alt="Explore Our Destinations" 
+            fill 
+            className="object-cover"
+            priority
+          />
+        </div>
         
         <div className="container-custom relative z-20 text-white text-center">
           <h1 className="mb-6">Discover Breathtaking Destinations</h1>
@@ -178,28 +178,36 @@ export default function DestinationsPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-gray-200 h-64 rounded-lg overflow-hidden relative">
-                {/* This would be replaced with an actual image */}
-                <div className="absolute inset-0 flex items-center justify-center text-gray-500">
-                  Destination Image 1
-                </div>
+                <Image
+                  src={getAssetPath("/images/destinations/istanbul.jpg")}
+                  alt="Istanbul, Turkey"
+                  fill
+                  className="object-cover transition-transform hover:scale-105 duration-500"
+                />
               </div>
               <div className="bg-gray-200 h-64 rounded-lg overflow-hidden relative">
-                {/* This would be replaced with an actual image */}
-                <div className="absolute inset-0 flex items-center justify-center text-gray-500">
-                  Destination Image 2
-                </div>
+                <Image
+                  src={getAssetPath("/images/destinations/cappadocia.jpg")}
+                  alt="Cappadocia, Turkey"
+                  fill
+                  className="object-cover transition-transform hover:scale-105 duration-500"
+                />
               </div>
               <div className="bg-gray-200 h-64 rounded-lg overflow-hidden relative">
-                {/* This would be replaced with an actual image */}
-                <div className="absolute inset-0 flex items-center justify-center text-gray-500">
-                  Destination Image 3
-                </div>
+                <Image
+                  src={getAssetPath("/images/destinations/dubai.jpg")}
+                  alt="Dubai, UAE"
+                  fill
+                  className="object-cover transition-transform hover:scale-105 duration-500"
+                />
               </div>
               <div className="bg-gray-200 h-64 rounded-lg overflow-hidden relative">
-                {/* This would be replaced with an actual image */}
-                <div className="absolute inset-0 flex items-center justify-center text-gray-500">
-                  Destination Image 4
-                </div>
+                <Image
+                  src={getAssetPath("/images/destinations/pamukkale.jpg")}
+                  alt="Pamukkale, Turkey"
+                  fill
+                  className="object-cover transition-transform hover:scale-105 duration-500"
+                />
               </div>
             </div>
           </div>
@@ -228,10 +236,12 @@ export default function DestinationsPage() {
               {countryDestinations.map((destination) => (
                 <div key={destination.id} className="card overflow-hidden group hover:shadow-lg transition-all duration-300">
                   <div className="h-64 bg-gray-200 relative overflow-hidden">
-                    {/* This would be replaced with an actual image */}
-                    <div className="absolute inset-0 flex items-center justify-center text-gray-500 group-hover:scale-105 transition-transform duration-500">
-                      {destination.name}
-                    </div>
+                    <Image
+                      src={getAssetPath(destination.image)}
+                      alt={destination.name}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
                   </div>
                   <div className="p-6">
                     <h3 className="text-xl font-bold mb-2 text-primary-700">{destination.name}</h3>
@@ -282,10 +292,18 @@ export default function DestinationsPage() {
             </p>
           </div>
           
-          <div className="h-[500px] bg-gray-200 rounded-xl relative">
-            {/* This would be replaced with an actual interactive map */}
-            <div className="absolute inset-0 flex items-center justify-center text-gray-500">
-              Interactive Map of Turkey, Greece, UAE, and Egypt Destinations
+          <div className="h-[500px] bg-gray-200 rounded-xl relative overflow-hidden">
+            <Image
+              src={getAssetPath("/images/destinations/istanbul-blue-mosque.jpg")}
+              alt="Map of our destinations"
+              fill
+              className="object-cover object-center opacity-30"
+            />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="bg-white/80 backdrop-blur-sm p-6 rounded-lg shadow-lg">
+                <p className="text-primary-700 font-semibold text-lg">Interactive Map Coming Soon</p>
+                <p className="text-gray-600">Our interactive destination map is under development</p>
+              </div>
             </div>
           </div>
         </div>
