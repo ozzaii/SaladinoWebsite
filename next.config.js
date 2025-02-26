@@ -7,12 +7,14 @@ const nextConfig = {
   // Output as static HTML files for easy deployment
   output: 'export',
   
-  // For GitHub Pages deployment - always use the repo name for basePath in production
+  // For GitHub Pages deployment - properly configure asset paths
   basePath: isProd ? repoName : '',
-  assetPrefix: isProd ? `${repoName}/` : '',
   
-  // GitHub Pages doesn't handle trailing slash well
-  trailingSlash: false,
+  // Need to remove trailing slash - critical for proper path resolution
+  assetPrefix: isProd ? repoName : '',
+  
+  // Set to true for GitHub Pages - this ensures paths end with a slash for directory-style URLs
+  trailingSlash: true,
   
   // Enable static image imports
   images: {
@@ -36,6 +38,12 @@ const nextConfig = {
   eslint: {
     // Still process eslint checks but don't block the build
     ignoreDuringBuilds: true,
+  },
+
+  // Ensure all asset paths are correct at build time
+  experimental: {
+    // This helps with static exports
+    appDocumentPreloading: false,
   },
 
   // Ensure paths are correct for assets

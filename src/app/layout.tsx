@@ -7,6 +7,7 @@ import { getAssetPath } from '@/utils/paths';
 import { ChatProvider } from '@/context/ChatContext';
 import Footer from '@/components/Footer';
 import FloatingChatButton from '@/components/shared/FloatingChatButton';
+import Script from 'next/script';
 
 const montserrat = Montserrat({ subsets: ['latin'] });
 
@@ -28,8 +29,22 @@ export default function RootLayout({
     { href: '/contact', label: 'Contacto' },
   ];
 
+  // Check if we're in production for GitHub Pages deployment
+  const isProd = process.env.NODE_ENV === 'production';
+  const prefix = isProd ? '/SaladinoWebsite' : '';
+
   return (
     <html lang="en">
+      <head>
+        {/* Load path-fixing script as early as possible */}
+        {isProd && (
+          <Script
+            id="path-fixer"
+            src={`${prefix}/fix-paths.js`}
+            strategy="beforeInteractive"
+          />
+        )}
+      </head>
       <body className={montserrat.className}>
         <ChatProvider>
           {/* Header */}
