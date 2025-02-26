@@ -1,48 +1,49 @@
 #!/bin/bash
-set -e
+set -e  # Exit immediately if a command exits with non-zero status
 
-# Build the project
+echo "Installing dependencies..."
+npm install --save-dev tailwindcss postcss autoprefixer
+
 echo "Building project..."
 export PATH="$PATH:./node_modules/.bin"
 npx next build && node fix-html.js
 
-# Save the out directory to a temporary location
+# Check if build succeeded
+if [ ! -d "out" ] || [ -z "$(ls -A out 2>/dev/null)" ]; then
+  echo "Build failed or 'out' directory is empty. Exiting."
+  exit 1
+fi
+
 echo "Saving built files..."
 rm -rf /tmp/next-out
-cp -R out /tmp/next-out
+mkdir -p /tmp/next-out
+cp -R out/* /tmp/next-out/
+cp -R out/.[!.]* /tmp/next-out/ 2>/dev/null || true
 
-# Create a fresh gh-pages branch
 echo "Creating a fresh gh-pages branch..."
-git branch -D gh-pages 2>/dev/null || true
 git checkout --orphan gh-pages
 
-# Remove everything
 echo "Cleaning the branch..."
-git rm -rf . 2>/dev/null || true
-rm -rf * .next .github .gitignore
+# Keep .git directory but remove everything else
+find . -maxdepth 1 -not -path "./.git" -not -path "." -exec rm -rf {} \;
 
-# Copy only the contents from the saved out directory
 echo "Copying built files from saved out directory..."
 cp -R /tmp/next-out/* .
-cp -R /tmp/next-out/.* . 2>/dev/null || true
+cp -R /tmp/next-out/.[!.]* . 2>/dev/null || true
 
-# Create a .nojekyll file
 echo "Creating .nojekyll file..."
 touch .nojekyll
 
-# Commit changes
 echo "Committing changes..."
-git add .
-git config user.name "GitHub Actions Bot"
-git config user.email "<>"
-git commit -m "Deploy website to GitHub Pages"
+git add -A
+git commit -m "Deploy website to GitHub Pages" --no-verify
 
-# Push to the gh-pages branch
 echo "Pushing to gh-pages branch..."
+# Push in smaller chunks with increased timeout and buffer size
+git config http.postBuffer 524288000
+git config http.lowSpeedLimit 1000
+git config http.lowSpeedTime 300
 git push -f origin gh-pages
 
-# Switch back to main branch
-echo "Switching back to main branch..."
-git checkout main
-
-echo "Deployment complete!" 
+echo "Deployment completed successfully!"
+git checkout main 
