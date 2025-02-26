@@ -3,17 +3,24 @@
  * This ensures images and other assets load correctly regardless of environment
  */
 export function getAssetPath(path) {
+  // Skip processing for absolute URLs or data URLs
+  if (path?.startsWith('http://') || 
+      path?.startsWith('https://') || 
+      path?.startsWith('data:') ||
+      !path) {
+    return path;
+  }
+  
   // Remove leading slash if present for consistency
   const cleanPath = path.startsWith('/') ? path.slice(1) : path;
   
-  // In development, assets are served from the public directory
-  // In production with GitHub Pages, we need to account for the repository name in the path
+  // GitHub Pages production path needs repo name
   const isProd = process.env.NODE_ENV === 'production';
   const basePath = isProd ? '/SaladinoWebsite/' : '/';
   
-  // Handle special case of direct URLs (don't modify external URLs)
-  if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://')) {
-    return cleanPath;
+  // Ensure we don't duplicate the base path if it's already in the path
+  if (isProd && cleanPath.startsWith('SaladinoWebsite/')) {
+    return `/${cleanPath}`;
   }
   
   return `${basePath}${cleanPath}`;

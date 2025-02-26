@@ -1,14 +1,15 @@
 /** @type {import('next').NextConfig} */
 
 const isProd = process.env.NODE_ENV === 'production';
+const repoName = '/SaladinoWebsite';
 
 const nextConfig = {
   // Output as static HTML files for easy deployment
   output: 'export',
   
   // For GitHub Pages deployment - only in production
-  basePath: isProd ? '/SaladinoWebsite' : '',
-  assetPrefix: isProd ? '/SaladinoWebsite' : '',
+  basePath: isProd ? repoName : '',
+  assetPrefix: isProd ? repoName : '',
   
   // GitHub Pages doesn't handle trailing slash well
   trailingSlash: false,
@@ -16,6 +17,13 @@ const nextConfig = {
   // Enable static image imports
   images: {
     unoptimized: true,
+    // Make sure domain settings are correct
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'ozzaii.github.io',
+      },
+    ],
   },
   
   // Don't fail build with type errors
@@ -28,6 +36,11 @@ const nextConfig = {
   eslint: {
     // Still process eslint checks but don't block the build
     ignoreDuringBuilds: true,
+  },
+
+  // Ensure paths are correct for assets
+  webpack: (config) => {
+    return config;
   },
 };
 
