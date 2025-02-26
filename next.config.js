@@ -7,9 +7,9 @@ const nextConfig = {
   // Output as static HTML files for easy deployment
   output: 'export',
   
-  // For GitHub Pages deployment - only in production
+  // For GitHub Pages deployment - always use the repo name for basePath in production
   basePath: isProd ? repoName : '',
-  assetPrefix: isProd ? repoName : '',
+  assetPrefix: isProd ? `${repoName}/` : '',
   
   // GitHub Pages doesn't handle trailing slash well
   trailingSlash: false,
