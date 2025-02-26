@@ -8,20 +8,47 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
-        {/* Early script to fix paths before resources are loaded */}
+        {/* Inline script to fix paths IMMEDIATELY before any resources load */}
         {isProd && (
-          <script src={`${prefix}/fix-paths.js`} strategy="beforeInteractive" />
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                (function() {
+                  // This must run BEFORE any resources are loaded
+                  const prefix = '/SaladinoWebsite';
+                  
+                  // Rewrite any script or stylesheet tags that start with /_next
+                  document.addEventListener('DOMContentLoaded', function() {
+                    // Fix scripts
+                    document.querySelectorAll('script[src^="/_next"]').forEach(script => {
+                      script.src = prefix + script.getAttribute('src');
+                    });
+                    
+                    // Fix CSS links
+                    document.querySelectorAll('link[rel="stylesheet"][href^="/_next"]').forEach(link => {
+                      link.href = prefix + link.getAttribute('href');
+                    });
+                    
+                    // Fix images 
+                    document.querySelectorAll('img[src^="/"]').forEach(img => {
+                      if (!img.src.includes(prefix) && !img.src.startsWith('http')) {
+                        img.src = prefix + img.getAttribute('src');
+                      }
+                    });
+                  });
+                })();
+              `,
+            }}
+          />
         )}
+        
+        {/* Make sure the base tag is at the top to affect ALL resources */}
+        {isProd && <base href={`${prefix}/`} />}
         
         {/* Ensure favicon and other static assets have correct paths */}
         <link rel="icon" href={`${prefix}/favicon.ico`} />
         <link rel="apple-touch-icon" href={`${prefix}/apple-touch-icon.png`} />
         <link rel="manifest" href={`${prefix}/site.webmanifest`} />
-        
-        {/* Add base tag to help with relative URLs */}
-        {isProd && (
-          <base href={`${prefix}/`} />
-        )}
       </Head>
       <body>
         <Main />
