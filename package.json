@@ -8,8 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "export": "npx next build && node fix-html.js",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d out"
+    "predeploy": "npm run build && npm run clean-gh-pages",
+    "deploy": "gh-pages -d out --dotfiles",
+    "clean-gh-pages": "gh-pages-clean"
   },
   "homepage": "https://ozzaii.github.io/SaladinoWebsite",
   "main": "index.js",
