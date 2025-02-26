@@ -69,19 +69,34 @@ function processHtmlFile(filePath) {
     console.log(`Processing ${filePath}...`);
     let html = fs.readFileSync(filePath, 'utf8');
     
-    // Only add the script if it's not already there
-    if (!html.includes('SaladinoWebsite/script')) {
-      // Add base tag and fix-path script right after <head>
-      html = html.replace('<head>', '<head>\n<base href="/SaladinoWebsite/" />' + pathFixScript);
-      
-      // Also directly fix the resources in the HTML
-      html = html.replace(/\/_next\//g, '/SaladinoWebsite/_next/');
-      
-      fs.writeFileSync(filePath, html, 'utf8');
-      console.log(`✅ Modified ${filePath}`);
-    } else {
-      console.log(`⏭️ Skipped ${filePath} (already processed)`);
+    // Check if the file already has our fix (to avoid double processing)
+    if (html.includes('<base href="/SaladinoWebsite/"')) {
+      console.log(`⏭️ Skipped ${filePath} (already has base tag)`);
+      return;
     }
+    
+    // Add base tag and fix-path script right after <head>
+    html = html.replace('<head>', '<head>\n<base href="/SaladinoWebsite/" />' + pathFixScript);
+    
+    // Directly fix the resources in the HTML content - prevent duplication by checking first
+    html = html.replace(/src="(\/_next\/[^"]+)"/g, (match, p1) => {
+      if (p1.includes('/SaladinoWebsite/')) return match;
+      return `src="/SaladinoWebsite${p1}"`;
+    });
+    
+    html = html.replace(/href="(\/_next\/[^"]+)"/g, (match, p1) => {
+      if (p1.includes('/SaladinoWebsite/')) return match;
+      return `href="/SaladinoWebsite${p1}"`;
+    });
+
+    // Make sure image paths are correct but not duplicated
+    html = html.replace(/src="(\/images\/[^"]+)"/g, (match, p1) => {
+      if (p1.includes('/SaladinoWebsite/')) return match;
+      return `src="/SaladinoWebsite${p1}"`;
+    });
+    
+    fs.writeFileSync(filePath, html, 'utf8');
+    console.log(`✅ Modified ${filePath}`);
   } catch (error) {
     console.error(`❌ Error processing ${filePath}:`, error);
   }

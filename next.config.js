@@ -16,33 +16,39 @@ const modifyHtmlFiles = () => {
         // Fix paths immediately when HTML is parsed
         var prefix = '/SaladinoWebsite';
         
+        // Avoid duplication
+        function hasPrefix(path) {
+          return path.includes(prefix);
+        }
+        
+        function fixAttribute(element, attribute) {
+          const value = element.getAttribute(attribute);
+          if (value && value.startsWith('/') && !hasPrefix(element[attribute])) {
+            element.setAttribute(attribute, prefix + value);
+          }
+        }
+        
         // Rewrite existing scripts
         function fixPaths() {
           // Fix scripts with /_next paths
           document.querySelectorAll('script[src^="/_next"]').forEach(function(el) {
-            if (!el.src.includes(prefix)) {
-              el.src = prefix + el.getAttribute('src');
-            }
+            fixAttribute(el, 'src');
           });
           
           // Fix stylesheets
           document.querySelectorAll('link[rel="stylesheet"][href^="/_next"]').forEach(function(el) {
-            if (!el.href.includes(prefix)) {
-              el.href = prefix + el.getAttribute('href');
-            }
+            fixAttribute(el, 'href');
           });
           
           // Fix preloads
           document.querySelectorAll('link[rel="preload"][href^="/_next"]').forEach(function(el) {
-            if (!el.href.includes(prefix)) {
-              el.href = prefix + el.getAttribute('href');
-            }
+            fixAttribute(el, 'href');
           });
           
           // Fix images
           document.querySelectorAll('img[src^="/"]').forEach(function(el) {
             if (!el.src.includes(prefix) && !el.src.startsWith('http')) {
-              el.src = prefix + el.getAttribute('src');
+              fixAttribute(el, 'src');
             }
           });
         }
@@ -74,11 +80,13 @@ const modifyHtmlFiles = () => {
         let html = readFileSync(filePath, 'utf8');
         
         // Only add the script if it's not already there
-        if (!html.includes('SaladinoWebsite/script')) {
+        if (!html.includes('<base href="/SaladinoWebsite/"')) {
           // Add base tag and fix-path script right after <head>
           html = html.replace('<head>', '<head>\n<base href="/SaladinoWebsite/" />' + pathFixScript);
           writeFileSync(filePath, html, 'utf8');
           console.log(`✅ Modified ${filePath}`);
+        } else {
+          console.log(`⏭️ Skipped ${filePath} (already has base tag)`);
         }
       } catch (error) {
         console.error(`❌ Error processing ${filePath}:`, error);
