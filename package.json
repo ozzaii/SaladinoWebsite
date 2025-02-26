@@ -10,6 +10,7 @@
     "export": "next build && node fix-html.js",
     "predeploy": "npm run build && npm run clean-gh-pages",
     "deploy": "gh-pages -d out --dotfiles --no-history --git git",
+    "deploy:clean": "bash clean-deploy.sh",
     "deploy:custom": "bash deploy.sh",
     "clean-gh-pages": "rimraf node_modules/.cache/gh-pages"
   },
