@@ -4,12 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && node fix-html.js",
+    "build": "./node_modules/.bin/next build && node fix-html.js",
     "start": "next start",
     "lint": "next lint",
-    "export": "npx next build && node fix-html.js",
+    "export": "./node_modules/.bin/next build && node fix-html.js",
     "predeploy": "npm run build && npm run clean-gh-pages",
-    "deploy": "gh-pages -d out --dotfiles --no-history",
+    "deploy": "gh-pages -d out --dotfiles --no-history --git git",
+    "deploy:custom": "bash deploy.sh",
     "clean-gh-pages": "rimraf node_modules/.cache/gh-pages"
   },
   "homepage": "https://ozzaii.github.io/SaladinoWebsite",
