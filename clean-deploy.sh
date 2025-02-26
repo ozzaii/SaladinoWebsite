@@ -20,6 +20,13 @@ mkdir -p /tmp/next-out
 cp -R out/* /tmp/next-out/
 cp -R out/.[!.]* /tmp/next-out/ 2>/dev/null || true
 
+# Check if gh-pages branch exists and delete it if it does
+echo "Checking for existing gh-pages branch..."
+if git show-ref --verify --quiet refs/heads/gh-pages; then
+  echo "Deleting existing gh-pages branch..."
+  git branch -D gh-pages
+fi
+
 echo "Creating a fresh gh-pages branch..."
 git checkout --orphan gh-pages
 
