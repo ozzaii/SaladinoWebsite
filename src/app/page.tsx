@@ -13,7 +13,7 @@ const featuredTours = [
   {
     id: 'super-turkey',
     title: 'Super Turkey Tour',
-    subtitle: 'La experiencia Turca completa',
+    subtitle: 'The complete Turkish experience',
     duration: '9 days',
     description: 'Our signature tour exploring Istanbul, Cappadocia, Pamukkale, and Ephesus with luxury accommodations and Spanish-speaking guides.',
     image: '/images/tours/real-images/istanbul.jpg',
@@ -23,7 +23,7 @@ const featuredTours = [
   {
     id: 'istanbul-cappadocia',
     title: 'Istanbul-Cappadocia Tour',
-    subtitle: 'Lo esencial de Turquía',
+    subtitle: 'The essentials of Turkey',
     duration: '6 days',
     description: 'Experience the rich history of Istanbul and the magical landscapes of Cappadocia with our expert local guides and premium accommodations.',
     image: '/images/tours/real-images/istanbul-hagia-sophia.jpg',
@@ -33,7 +33,7 @@ const featuredTours = [
   {
     id: 'turkey-dubai',
     title: 'Turkey-Dubai Combined Tour',
-    subtitle: 'De lo ancestral a lo ultramoderno',
+    subtitle: 'From ancient to ultramodern',
     duration: '11 days',
     description: 'The perfect combination of Turkey\'s rich history and Dubai\'s modern luxury in one seamless journey designed for discerning travelers.',
     image: '/images/tours/real-images/dubai.jpg',
@@ -47,22 +47,22 @@ const testimonials = [
   {
     id: 1,
     name: 'Maria Rodriguez',
-    country: 'México',
-    text: '¡Nuestro viaje a Turquía con Saladino Travel fue absolutamente mágico! Los guías eran conocedores, los alojamientos eran lujosos y las experiencias fueron inolvidables.',
+    country: 'Mexico',
+    text: 'Our trip to Turkey with Saladino Travel was absolutely magical! The guides were knowledgeable, the accommodations were luxurious, and the experiences were unforgettable.',
     avatar: '/images/testimonials/latin-american-woman.jpg',
   },
   {
     id: 2,
     name: 'Carlos Mendoza',
     country: 'Colombia',
-    text: 'La combinación de Turquía y Dubai superó todas mis expectativas. El contraste entre culturas fue fascinante y cada detalle estaba perfectamente organizado para nuestro grupo.',
+    text: 'The combination of Turkey and Dubai exceeded all my expectations. The contrast between cultures was fascinating and every detail was perfectly organized for our group.',
     avatar: '/images/testimonials/latin-american-man.jpg',
   },
   {
     id: 3,
     name: 'Ana Lucia Torres',
     country: 'Argentina',
-    text: 'Como viajera soltera, me sentí segura y bienvenida. Los guías eran excepcionales y hablaban perfectamente español. La experiencia en globo en Capadocia fue el momento culminante.',
+    text: 'As a solo traveler, I felt safe and welcome. The guides were exceptional and spoke perfect English. The hot air balloon experience in Cappadocia was the highlight.',
     avatar: '/images/testimonials/latin-american-woman2.jpg',
   },
 ];
@@ -374,6 +374,7 @@ export default function Home() {
             fill 
             className="object-cover object-center"
           />
+          <div className="absolute inset-0 bg-black/50"></div>
         </div>
         
         <div className="container mx-auto px-6 md:px-10 max-w-screen-xl relative z-10">
@@ -385,13 +386,13 @@ export default function Home() {
             </div>
             
             <h2 
-              className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white mb-6 leading-tight"
+              className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white mb-6 leading-tight drop-shadow-md"
             >
               Start your <span className="text-[#14b8a6]">premium journey</span> today
             </h2>
             
             <p 
-              className="text-white/90 text-xl mb-10 leading-relaxed"
+              className="text-white/90 text-xl mb-10 leading-relaxed drop-shadow-sm"
             >
               Discover the magic of Turkey and Dubai with our expert guides and meticulously crafted experiences.
             </p>

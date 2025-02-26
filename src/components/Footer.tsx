@@ -24,6 +24,32 @@ const Footer = () => {
       </div>
 
       <div className="container mx-auto px-6 md:px-10 relative">
+        {/* Atlas AI Assistant Highlight */}
+        <div className="mb-16 p-6 md:p-8 rounded-2xl bg-gradient-to-r from-[#9e1687]/10 to-[#14b8a6]/10 backdrop-blur-sm border border-white/5 fade-up-item">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div className="md:pr-8">
+              <h2 className="text-2xl font-bold mb-3 flex items-center">
+                <span className="bg-gradient-to-r from-[#9e1687] to-[#14b8a6] text-transparent bg-clip-text">Atlas AI Assistant</span>
+                <span className="ml-2 bg-white/10 text-white text-xs px-2 py-1 rounded-full">New</span>
+              </h2>
+              <p className="text-gray-400">
+                Experience personalized travel planning with Atlas, our AI-powered travel consultant. Get itineraries, destination insights, and travel recommendations instantly.
+              </p>
+            </div>
+            <div className="flex justify-center md:justify-end">
+              <Link 
+                href="/ai-assistant" 
+                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#9e1687] to-[#14b8a6] text-white rounded-lg font-medium shadow-lg hover:shadow-xl hover:shadow-[#9e1687]/20 transform hover:translate-y-[-2px] transition-all duration-300"
+              >
+                Try Atlas Now
+                <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 5l7 7-7 7M5 12h15"></path>
+                </svg>
+              </Link>
+            </div>
+          </div>
+        </div>
+      
         {/* Main footer content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 fade-up-stagger">
           {/* Company Information */}
@@ -40,7 +66,7 @@ const Footer = () => {
             </Link>
             
             <p className="text-gray-400 max-w-xs">
-              Experiencias de viaje personalizadas en Turquía y Dubái, diseñadas para viajeros hispanohablantes.
+              Personalized travel experiences in Turkey and Dubai, designed for discerning international travelers.
             </p>
             
             <div className="flex space-x-4">
@@ -76,11 +102,16 @@ const Footer = () => {
                 { text: 'Destinations', href: '/destinations' },
                 { text: 'About Us', href: '/about' },
                 { text: 'Contact', href: '/contact' },
-                { text: 'AI Travel Assistant', href: '/ai-assistant' },
+                { text: 'AI Travel Assistant', href: '/ai-assistant', highlight: true },
               ].map((link, i) => (
                 <li key={i} className="transform hover:translate-x-2 transition-transform duration-300">
-                  <Link href={link.href} className="text-gray-400 hover:text-white transition-colors duration-300">
+                  <Link href={link.href} className={`flex items-center ${link.highlight ? 'text-[#14b8a6] font-medium' : 'text-gray-400'} hover:text-white transition-colors duration-300`}>
                     {link.text}
+                    {link.highlight && (
+                      <span className="ml-2 bg-[#14b8a6]/20 text-[#14b8a6] text-xs px-2 py-0.5 rounded-full">
+                        New
+                      </span>
+                    )}
                   </Link>
                 </li>
               ))}
@@ -162,6 +193,13 @@ const Footer = () => {
               <p className="text-gray-500 text-sm mt-3">We respect your privacy. Unsubscribe at any time.</p>
             </div>
           </div>
+        </div>
+        
+        {/* Premium CTA */}
+        <div className="mt-12 text-center">
+          <p className="text-white text-lg font-medium">
+            Start your premium journey today <a href="mailto:info@saladinotravel.com" className="text-[#14b8a6] hover:underline">info@saladinotravel.com</a>
+          </p>
         </div>
         
         {/* Copyright */}

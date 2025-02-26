@@ -45,9 +45,15 @@ export default function ChatComponent() {
     // Default welcome message if no stored messages
     return [{
       id: '1',
-      content: "Hi there! I'm Atlas, your friendly travel consultant at Saladino Travel. I'd love to help you plan an unforgettable journey to Turkey or Dubai! 👋\n\nI'm particularly knowledgeable about our three signature tours:\n• Istanbul & Cappadocia (6 days) - perfect for first-time visitors\n• Super Turkey (10 days) - our comprehensive cultural experience\n• Super Turkey & Dubai (12 days) - combining ancient wonders with modern luxury\n\nWhat kind of travel experience are you looking for? Or feel free to ask me anything about these destinations!",
+      content: "✨ Welcome to Saladino Travel's Premium Concierge Service! ✨\n\nI'm Atlas, your personal AI travel assistant, ready to help you plan an extraordinary journey through Turkey and Dubai.\n\nOur signature experiences include:\n\n• **Super Turkey Tour (9 days)** - Our comprehensive luxury experience with Istanbul, Cappadocia, Pamukkale, and Ephesus\n\n• **Istanbul-Cappadocia (6 days)** - The essential Turkish experience focusing on two iconic destinations\n\n• **Turkey-Dubai (11 days)** - The perfect blend of ancient wonders and ultramodern luxury\n\nHow may I assist with your travel plans today?",
       role: 'assistant',
       timestamp: new Date(),
+    },
+    {
+      id: '2',
+      content: "I can help with specific tour details, customize your itinerary, recommend the best time to visit, or answer any questions about accommodations, activities, or cultural experiences. What aspects of your journey would you like to explore first?",
+      role: 'assistant',
+      timestamp: new Date(Date.now() + 1000),
     }];
   });
   
@@ -66,12 +72,22 @@ export default function ChatComponent() {
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [error, setError] = useState<string | null>(null);
+  const [shouldScroll, setShouldScroll] = useState<boolean>(true);
+  const [messagesContainerRef, setMessagesContainerRef] = useState<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (endOfMessagesRef.current) {
-      endOfMessagesRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (endOfMessagesRef.current && shouldScroll && messagesContainerRef) {
+      // Instead of scrolling the whole page, only scroll the messages container
+      const container = messagesContainerRef;
+      const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
+      
+      if (isNearBottom || messages.length <= 3) {
+        endOfMessagesRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }
+      // Only auto-scroll when new messages are added
+      setShouldScroll(false);
     }
-  }, [messages]);
+  }, [messages, shouldScroll, messagesContainerRef]);
 
   useEffect(() => {
     // Auto-resize the textarea as content grows
@@ -98,25 +114,29 @@ export default function ChatComponent() {
 
     setIsLoading(true);
     
-    // Create a new user message
-    const userMessage: Message = {
+    // Trim input and reset field
+    const userMessage = input.trim();
+    setInput('');
+    
+    // Create new user message
+    const newUserMessage: Message = {
       id: Date.now().toString(),
-      content: input.trim(),
+      content: userMessage,
       role: 'user',
       timestamp: new Date(),
     };
     
-    // Add the user message to the conversation
-    setMessages((prev) => [...prev, userMessage]);
-    setInput('');
+    // Update state with new user message
+    setMessages(prevMessages => [...prevMessages, newUserMessage]);
+    setShouldScroll(true);
     setIsTyping(true);
     
     try {
       // Detect if this is likely a follow-up question
-      const isFollowUp = detectFollowUpQuestion(input.trim(), messages);
+      const isFollowUp = detectFollowUpQuestion(userMessage, messages);
       
       // Add a context reminder if this looks like a follow-up
-      let contextEnhancedMessages = [...messages, userMessage];
+      let contextEnhancedMessages = [...messages, newUserMessage];
       if (isFollowUp) {
         const contextReminderMessage: Message = {
           id: 'context-reminder-' + Date.now().toString(),
@@ -182,20 +202,20 @@ Provide tailored recommendations based on the traveler's specific interests, pre
             },
             ...messagesToSend.map((msg) => ({ role: msg.role, content: msg.content }))
           ],
-          input.trim()
+          userMessage
         );
 
         // If message is image-seeking, find a relevant image
         let imageUrl: string | undefined;
         if (
-          input.toLowerCase().includes('show me') ||
-          input.toLowerCase().includes('picture of') ||
-          input.toLowerCase().includes('image of') ||
-          input.toLowerCase().includes('photo of') ||
-          input.toLowerCase().includes('what does') ||
-          input.toLowerCase().includes('can i see')
+          userMessage.toLowerCase().includes('show me') ||
+          userMessage.toLowerCase().includes('picture of') ||
+          userMessage.toLowerCase().includes('image of') ||
+          userMessage.toLowerCase().includes('photo of') ||
+          userMessage.toLowerCase().includes('what does') ||
+          userMessage.toLowerCase().includes('can i see')
         ) {
-          imageUrl = await searchForImage(input.trim());
+          imageUrl = await searchForImage(userMessage);
         }
 
         setIsTyping(false);
@@ -209,6 +229,14 @@ Provide tailored recommendations based on the traveler's specific interests, pre
         };
 
         setMessages((prev) => [...prev, aiMessage]);
+        
+        // Only auto-scroll if the user was already near the bottom of the chat container
+        if (messagesContainerRef) {
+          const container = messagesContainerRef;
+          const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
+          setShouldScroll(isNearBottom);
+        }
+        
         setIsLoading(false);
       }, 800);
     } catch (error) {
@@ -236,6 +264,14 @@ Provide tailored recommendations based on the traveler's specific interests, pre
       };
 
       setMessages((prev) => [...prev, errorMessage]);
+      
+      // Only auto-scroll if the user was already near the bottom of the chat container
+      if (messagesContainerRef) {
+        const container = messagesContainerRef;
+        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
+        setShouldScroll(isNearBottom);
+      }
+      
       setIsLoading(false);
     }
   }, [input, isLoading, messages]);
@@ -304,38 +340,71 @@ Provide tailored recommendations based on the traveler's specific interests, pre
 
   const typingIndicator = () => (
     <motion.div 
-      className="flex items-center space-x-2 px-4 py-3 rounded-lg bg-purple-50 max-w-[80%]"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      className="flex items-center space-x-2 px-4 py-3 rounded-xl bg-white/80 backdrop-blur-sm shadow-lg border border-white/20 max-w-[80%]"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="flex space-x-1">
+      <div className="flex space-x-2">
         <motion.div 
-          className="w-2 h-2 rounded-full bg-[#9e1687]"
-          animate={{ y: [0, -5, 0] }}
-          transition={{ duration: 0.6, repeat: Infinity, repeatType: "loop", times: [0, 0.5, 1] }}
+          className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-[#9e1687] to-[#14b8a6]"
+          animate={{ 
+            y: [0, -6, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{ 
+            duration: 0.8, 
+            repeat: Infinity, 
+            repeatType: "loop", 
+            ease: "easeInOut"
+          }}
         />
         <motion.div 
-          className="w-2 h-2 rounded-full bg-[#9e1687]"
-          animate={{ y: [0, -5, 0] }}
-          transition={{ duration: 0.6, repeat: Infinity, repeatType: "loop", times: [0, 0.5, 1], delay: 0.2 }}
+          className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-[#9e1687] to-[#14b8a6]"
+          animate={{ 
+            y: [0, -6, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{ 
+            duration: 0.8, 
+            repeat: Infinity, 
+            repeatType: "loop", 
+            ease: "easeInOut",
+            delay: 0.15
+          }}
         />
         <motion.div 
-          className="w-2 h-2 rounded-full bg-[#9e1687]"
-          animate={{ y: [0, -5, 0] }}
-          transition={{ duration: 0.6, repeat: Infinity, repeatType: "loop", times: [0, 0.5, 1], delay: 0.4 }}
+          className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-[#9e1687] to-[#14b8a6]"
+          animate={{ 
+            y: [0, -6, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{ 
+            duration: 0.8, 
+            repeat: Infinity, 
+            repeatType: "loop", 
+            ease: "easeInOut",
+            delay: 0.3
+          }}
         />
       </div>
-      <span className="text-sm text-gray-500">Atlas is thinking...</span>
+      <span className="text-sm text-gray-700 font-medium">Atlas is thinking<motion.span
+        animate={{ opacity: [0, 1, 1, 0] }}
+        transition={{ times: [0, 0.3, 0.7, 1], duration: 1.5, repeat: Infinity }}
+        className="inline-block"
+      >...</motion.span></span>
     </motion.div>
   );
 
   return (
-    <div className="flex flex-col h-full w-full overflow-hidden bg-slate-50">
+    <div className="flex flex-col h-full w-full overflow-hidden bg-gradient-to-br from-white to-slate-50 shadow-xl border border-white/20 rounded-xl">
       {/* Messages Container */}
-      <div className="flex-1 overflow-y-auto p-4 bg-gradient-to-b from-slate-50 to-white">
+      <div 
+        ref={(el) => setMessagesContainerRef(el)}
+        className="flex-1 overflow-y-auto p-4 md:p-6 bg-gradient-to-br from-white/80 to-slate-50/80 backdrop-blur-sm bg-[length:20px_20px] bg-[linear-gradient(to_right,rgba(158,22,135,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(20,184,166,0.03)_1px,transparent_1px)]"
+      >
         {error && (
-          <div className="p-3 mb-4 bg-red-50 border border-red-100 rounded-lg text-red-600 text-sm">
+          <div className="p-3 mb-4 bg-red-50/90 backdrop-blur-sm border border-red-100 rounded-lg text-red-600 text-sm">
             <p className="font-medium">Connection error</p>
             <p className="text-xs mt-1">Please check your internet connection and try again.</p>
           </div>
@@ -356,10 +425,10 @@ Provide tailored recommendations based on the traveler's specific interests, pre
                   layout
                 >
                   <div
-                    className={`max-w-[80%] rounded-lg p-4 ${
+                    className={`max-w-[80%] rounded-xl p-4 ${
                       message.role === 'user'
-                        ? 'bg-[#9e1687] text-white'
-                        : 'bg-white shadow-md border border-gray-200 text-gray-800'
+                        ? 'bg-gradient-to-r from-[#9e1687] to-[#9e1687]/90 text-white shadow-lg shadow-[#9e1687]/10'
+                        : 'bg-white/90 backdrop-blur-sm shadow-lg shadow-[#14b8a6]/5 border border-white/60 text-gray-800'
                     }`}
                   >
                     <div className="prose prose-sm max-w-none">
@@ -406,11 +475,11 @@ Provide tailored recommendations based on the traveler's specific interests, pre
       </div>
       
       {/* Input Container */}
-      <div className="bg-white p-4 border-t border-gray-200 shadow-inner">
-        <div className="flex items-end space-x-2">
+      <div className="bg-white/80 backdrop-blur-md p-4 border-t border-gray-100 shadow-lg">
+        <div className="flex items-end space-x-2 max-w-4xl mx-auto">
           <textarea
             ref={inputRef}
-            className="flex-1 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#9e1687] resize-none overflow-hidden"
+            className="flex-1 p-4 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#9e1687] resize-none overflow-hidden shadow-inner bg-white/90"
             placeholder="Inquire about destinations, itineraries, or travel advice..."
             value={input}
             onChange={handleInputChange}
@@ -422,10 +491,10 @@ Provide tailored recommendations based on the traveler's specific interests, pre
           <button
             onClick={handleSendMessage}
             disabled={isLoading || input.trim() === ''}
-            className={`px-4 py-3 rounded-lg ${
+            className={`p-4 rounded-xl ${
               isLoading || input.trim() === ''
                 ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                : 'bg-gradient-to-r from-[#9e1687] to-[#14b8a6] text-white shadow-md hover:shadow-lg transition-shadow'
+                : 'bg-gradient-to-r from-[#9e1687] to-[#14b8a6] text-white shadow-md hover:shadow-lg hover:shadow-[#9e1687]/20 transition-all transform hover:scale-105 duration-300'
             } flex-shrink-0 flex items-center justify-center`}
           >
             <svg
@@ -444,8 +513,8 @@ Provide tailored recommendations based on the traveler's specific interests, pre
             </svg>
           </button>
         </div>
-        <div className="mt-2 text-xs text-gray-500 text-center">
-          Powered by Gemini 2.0 Flash | <span className="text-[#14b8a6]">Saladino Travel</span>
+        <div className="mt-2 text-xs text-gray-500 text-center max-w-4xl mx-auto">
+          Powered by Gemini 2.0 Flash | <span className="font-medium text-[#14b8a6]">Saladino Travel AI Assistant</span>
         </div>
       </div>
     </div>

@@ -12,8 +12,8 @@ import Script from 'next/script';
 const montserrat = Montserrat({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Saladino Travel - Experiencias Turcas',
-  description: 'Viajes y tours personalizados para hispanohablantes en Turquía y Dubái.',
+  title: 'Saladino Travel - Turkish Experiences',
+  description: 'Personalized travel and tours for English speakers in Turkey and Dubai.',
 };
 
 export default function RootLayout({
@@ -22,11 +22,11 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   const navigationLinks = [
-    { href: '/', label: 'Inicio' },
+    { href: '/', label: 'Home' },
     { href: '/tours', label: 'Tours' },
-    { href: '/destinations', label: 'Destinos' },
-    { href: '/about', label: 'Sobre Nosotros' },
-    { href: '/contact', label: 'Contacto' },
+    { href: '/destinations', label: 'Destinations' },
+    { href: '/about', label: 'About Us' },
+    { href: '/contact', label: 'Contact' },
   ];
 
   // Check if we're in production for GitHub Pages deployment

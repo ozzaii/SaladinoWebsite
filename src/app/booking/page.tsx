@@ -10,21 +10,21 @@ const tours = {
   'super-turkey': {
     id: 'super-turkey',
     title: 'Super Turkey Tour',
-    subtitle: 'La experiencia Turca completa',
+    subtitle: 'The complete Turkish experience',
     duration: '9 days',
     price: 1499,
   },
   'istanbul-cappadocia': {
     id: 'istanbul-cappadocia',
     title: 'Istanbul-Cappadocia Tour',
-    subtitle: 'Lo esencial de Turquía',
+    subtitle: 'The essentials of Turkey',
     duration: '6 days',
     price: 899,
   },
   'turkey-dubai': {
     id: 'turkey-dubai',
     title: 'Turkey-Dubai Combined Tour',
-    subtitle: 'De lo ancestral a lo ultramoderno',
+    subtitle: 'From ancient to ultramodern',
     duration: '11 days',
     price: 1899,
   },
@@ -32,7 +32,7 @@ const tours = {
 
 export const metadata: Metadata = {
   title: 'Book Your Tour | Saladino Travel',
-  description: 'Secure your spot on one of our premium Spanish-speaking guided tours in Turkey and Dubai. Easy booking process with flexible payment options.',
+  description: 'Secure your spot on one of our premium guided tours in Turkey and Dubai. Easy booking process with flexible payment options.',
 };
 
 export default function BookingPage() {
@@ -57,7 +57,7 @@ export default function BookingPage() {
             <h1 className="text-4xl md:text-5xl font-display font-bold mb-6 drop-shadow-lg">Book Your Tour</h1>
           </div>
           <p className="text-xl max-w-3xl mx-auto text-white/90 drop-shadow-md">
-            Secure your spot on one of our premium Spanish-speaking guided tours and embark on an unforgettable journey through Turkey and Dubai
+            Secure your spot on one of our premium guided tours and embark on an unforgettable journey through Turkey and Dubai
           </p>
         </div>
       </section>
@@ -100,14 +100,14 @@ export default function BookingPage() {
                         />
                         <label 
                           htmlFor={tour.id} 
-                          className="block cursor-pointer p-4 border border-gray-200 rounded-lg transition-all peer-checked:border-[#9e1687] peer-checked:bg-[#9e1687]/5 hover:border-[#9e1687]/30"
+                          className="block cursor-pointer p-4 pr-14 border border-gray-200 rounded-lg transition-all peer-checked:border-[#9e1687] peer-checked:bg-[#9e1687]/5 hover:border-[#9e1687]/30"
                         >
                           <div className="flex justify-between items-center">
                             <div>
                               <span className="block font-bold text-lg">{tour.title}</span>
                               <span className="block text-gray-500">{tour.subtitle} | {tour.duration}</span>
                             </div>
-                            <div className="text-xl font-bold bg-gradient-to-r from-[#9e1687] to-[#14b8a6] text-transparent bg-clip-text">
+                            <div className="text-xl font-bold text-[#9e1687]">
                               ${tour.price}
                             </div>
                           </div>
@@ -329,7 +329,7 @@ export default function BookingPage() {
                   <div className="p-6">
                     <div className="mb-6">
                       <h4 className="font-bold text-lg bg-gradient-to-r from-[#9e1687] to-[#14b8a6] text-transparent bg-clip-text mb-1">Super Turkey Tour</h4>
-                      <p className="text-gray-600">La experiencia Turca completa • 9 days</p>
+                      <p className="text-gray-600">The complete Turkish experience • 9 days</p>
                     </div>
                     
                     <div className="border-t border-b py-4 mb-6">

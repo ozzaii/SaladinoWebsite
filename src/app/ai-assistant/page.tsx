@@ -2,217 +2,350 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { getAssetPath } from '@/utils/paths';
-import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { FaGlobeAmericas, FaImage, FaBolt, FaMapMarkedAlt, FaRegCalendarAlt, FaHistory } from 'react-icons/fa';
+import { Metadata } from 'next';
+import dynamic from 'next/dynamic';
+import { FaGlobeAmericas, FaImage, FaBolt, FaMapMarkedAlt, FaRegCalendarAlt, FaHistory, FaRobot, FaComments } from 'react-icons/fa';
+import Head from 'next/head';
 
-// Import the AIAssistant component with dynamic import to ensure it's client-side only
-const AIAssistant = dynamic(() => import('@/components/AIAssistant'), {
+// Dynamically import client-side only components
+const AIAssistant = dynamic(() => import('@/components/shared/ChatComponent'), {
   ssr: false,
 });
 
-// Import the VideoBackground component with dynamic import to ensure it's client-side only
 const VideoBackground = dynamic(() => import('@/components/shared/VideoBackground'), {
   ssr: false,
 });
 
-// Define brand colors directly to avoid CSS variable issues
-const brandPurple = '#9e1687';
-const brandTeal = '#14b8a6';
+// Brand colors
+const brandPrimary = '#9e1687';
+const brandSecondary = '#14b8a6';
 
-// Note: To use the Gemini 2.0 Flash API:
-// 1. Create an API key from Google AI Studio (https://ai.google.dev/)
-// 2. Set up environment variables for the API key
-// 3. Install the @google/generative-ai package: npm install @google/generative-ai
-// 4. Create a client component that uses the Gemini API
+// Define metadata for SEO
+export const metadata: Metadata = {
+  title: 'Atlas AI Travel Assistant | Saladino Travel',
+  description: 'Discover personalized travel experiences with Atlas, your AI-powered travel consultant. Get instant itineraries, destination insights, and travel recommendations for Turkey and Dubai.',
+  keywords: ['AI travel assistant', 'travel consultant', 'Turkey travel', 'Dubai travel', 'travel planning', 'Atlas AI'],
+  openGraph: {
+    title: 'Atlas AI Travel Assistant | Saladino Travel',
+    description: 'Your personal AI travel consultant for Turkey and Dubai. Get instant itineraries and travel recommendations.',
+    images: ['/images/atlas-ai-preview.jpg'],
+    url: 'https://saladinotravel.com/ai-assistant',
+    type: 'website',
+  },
+};
 
 export default function AIAssistantPage() {
   return (
-    <main className="flex min-h-screen flex-col bg-white">
-      {/* Hero Section with Video Background */}
-      <div className="relative w-full h-[60vh] overflow-hidden">
-        <VideoBackground />
-        
-        <div className="absolute inset-0 flex items-center justify-center z-10 px-4 bg-black/40">
-          <div className="text-center max-w-4xl">
-            <div className="inline-block mb-6 px-6 py-3 rounded-full bg-white/90 shadow-xl transform hover:scale-105 transition-transform duration-300">
-              <div className="flex items-center space-x-3">
-                <div className="bg-gradient-to-r from-[#9e1687] to-[#14b8a6] h-10 w-10 rounded-full flex items-center justify-center">
-                  <FaGlobeAmericas className="text-white h-5 w-5" />
+    <>
+      <Head>
+        <title>{metadata.title}</title>
+        <meta name="description" content={metadata.description} />
+        <meta name="keywords" content={metadata.keywords} />
+        <meta property="og:title" content={metadata.openGraph.title} />
+        <meta property="og:description" content={metadata.openGraph.description} />
+        <meta property="og:image" content={metadata.openGraph.images[0]} />
+      </Head>
+      <main className="min-h-screen bg-[#f9fafb]">
+        {/* Hero Section with Video Background */}
+        <section className="relative h-[65vh] text-white flex items-center overflow-hidden">
+          <VideoBackground videoSrc="/videos/travel-hero.mp4" />
+          
+          <div className="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-[2px]" />
+          
+          <div className="container mx-auto px-6 relative z-10">
+            <div className="max-w-3xl">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                Meet <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#9e1687] to-[#14b8a6]">Atlas</span>, 
+                <div className="mt-2">Your AI Travel Consultant</div>
+              </h1>
+              <p className="text-xl md:text-2xl mb-8 text-gray-200 leading-relaxed">
+                Explore Turkey & Dubai with personalized recommendations, itineraries, and insights from your AI-powered travel companion.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <a 
+                  href="#chat-section" 
+                  className="px-8 py-4 rounded-lg bg-gradient-to-r from-[#9e1687] to-[#14b8a6] text-white font-semibold shadow-lg hover:shadow-xl hover:shadow-purple-500/20 transform hover:translate-y-[-2px] transition-all duration-300"
+                >
+                  Chat with Atlas
+                </a>
+                <Link
+                  href="/tours"
+                  className="px-8 py-4 rounded-lg bg-white/20 backdrop-blur-md text-white border border-white/30 font-semibold hover:bg-white/30 transition-all duration-300"
+                >
+                  Browse Tours
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Main Content */}
+        <section className="py-20 relative overflow-hidden">
+          {/* Background decorative elements */}
+          <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-gradient-to-br from-[#9e1687]/10 to-[#14b8a6]/10 rounded-full blur-[100px]" />
+          <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-gradient-to-tr from-[#9e1687]/10 to-[#14b8a6]/10 rounded-full blur-[100px]" />
+          
+          <div className="container mx-auto px-6 relative">
+            <div className="text-center max-w-4xl mx-auto mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                Your Personal AI Travel Expert
+              </h2>
+              <p className="text-xl text-gray-600 leading-relaxed">
+                Atlas combines extensive knowledge of Turkey and Dubai with advanced AI capabilities to provide you with personalized travel guidance, recommendations, and support.
+              </p>
+            </div>
+            
+            {/* Chat Section */}
+            <div id="chat-section" className="max-w-5xl mx-auto mb-32 scroll-mt-24">
+              <div className="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-xl overflow-hidden border border-gray-100 relative">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#9e1687] to-[#14b8a6]"></div>
+                
+                {/* Chat Interface */}
+                <div className="p-6 md:p-10 pb-6">
+                  <div className="flex items-center mb-6">
+                    <div className="relative w-14 h-14 bg-gradient-to-br from-[#9e1687] to-[#14b8a6] rounded-xl flex items-center justify-center text-white font-bold text-xl mr-4 shadow-md">
+                      A
+                      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900">Atlas AI Assistant</h3>
+                      <p className="text-gray-500">Travel Expert • Available 24/7</p>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-gradient-to-br from-[#f9fafb] to-[#f3f4f6] p-6 rounded-2xl mb-8 max-w-2xl mx-auto text-center border border-gray-100">
+                    <p className="text-gray-600 mb-4 text-lg">
+                      Hello! I'm Atlas, your AI travel assistant for Turkey and Dubai. 
+                      Ask me anything about destinations, attractions, tours, or travel planning!
+                    </p>
+                    <div className="flex flex-wrap gap-2 justify-center text-sm">
+                      <div className="bg-gray-100 px-3 py-1 rounded-full text-gray-700 cursor-pointer hover:bg-gray-200">
+                        "Best time to visit Istanbul?"
+                      </div>
+                      <div className="bg-gray-100 px-3 py-1 rounded-full text-gray-700 cursor-pointer hover:bg-gray-200">
+                        "Top attractions in Dubai"
+                      </div>
+                      <div className="bg-gray-100 px-3 py-1 rounded-full text-gray-700 cursor-pointer hover:bg-gray-200">
+                        "5 day itinerary for Turkey"
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <AIAssistant />
                 </div>
-                <span className="text-lg font-semibold bg-gradient-to-r from-[#9e1687] to-[#14b8a6] bg-clip-text text-transparent">
-                  Powered by Gemini 2.0 Flash
-                </span>
+              </div>
+            </div>
+            
+            {/* Features Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
+              {/* Destination Intelligence */}
+              <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 group">
+                <div className="w-14 h-14 mb-6 bg-[#9e1687]/10 rounded-xl flex items-center justify-center group-hover:bg-[#9e1687]/20 transition-all duration-300">
+                  <svg className="w-7 h-7 text-[#9e1687]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">Destination Intelligence</h3>
+                <p className="text-gray-600 mb-4">
+                  Get accurate, up-to-date information about attractions, cultural insights, local customs, and practical travel tips.
+                </p>
+                <ul className="space-y-2 text-gray-600">
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 mr-2 text-[#14b8a6]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Local recommendations
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 mr-2 text-[#14b8a6]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Cultural etiquette
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 mr-2 text-[#14b8a6]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Transportation advice
+                  </li>
+                </ul>
+              </div>
+              
+              {/* Visual Exploration */}
+              <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 group">
+                <div className="w-14 h-14 mb-6 bg-[#14b8a6]/10 rounded-xl flex items-center justify-center group-hover:bg-[#14b8a6]/20 transition-all duration-300">
+                  <svg className="w-7 h-7 text-[#14b8a6]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">Visual Exploration</h3>
+                <p className="text-gray-600 mb-4">
+                  Discover the beauty of Turkey and Dubai through rich descriptions and image recommendations of iconic landmarks.
+                </p>
+                <ul className="space-y-2 text-gray-600">
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 mr-2 text-[#9e1687]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Stunning descriptions
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 mr-2 text-[#9e1687]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Hidden gems
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 mr-2 text-[#9e1687]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Scenic viewpoints
+                  </li>
+                </ul>
+              </div>
+              
+              {/* Tailored Itinerary Design */}
+              <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 group">
+                <div className="w-14 h-14 mb-6 bg-gradient-to-br from-[#9e1687]/10 to-[#14b8a6]/10 rounded-xl flex items-center justify-center group-hover:from-[#9e1687]/20 group-hover:to-[#14b8a6]/20 transition-all duration-300">
+                  <svg className="w-7 h-7 text-[#9e1687]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">Tailored Itinerary Design</h3>
+                <p className="text-gray-600 mb-4">
+                  Get personalized day-by-day travel plans based on your interests, timeframe, and preferences.
+                </p>
+                <ul className="space-y-2 text-gray-600">
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 mr-2 text-gradient-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Custom schedules
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 mr-2 text-gradient-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Pace optimization
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 mr-2 text-gradient-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Budget considerations
+                  </li>
+                </ul>
               </div>
             </div>
             
-            <h1 className="text-5xl md:text-6xl font-display font-bold mb-6 text-white drop-shadow-md">
-              Meet Atlas:<br />Your Travel Consultant
-            </h1>
+            {/* Traveler Conversations */}
+            <div className="mb-24" id="traveler-conversations">
+              <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
+                Conversations from Fellow Travelers
+              </h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {[
+                  {
+                    question: "What are the must-see places in Istanbul for a 3-day trip?",
+                    answer: "For a 3-day Istanbul trip, I recommend: Day 1: Hagia Sophia, Blue Mosque, and Topkapi Palace. Day 2: Grand Bazaar, Spice Market, and a Bosphorus cruise. Day 3: Chora Church, Galata Tower, and Istiklal Street. Don't miss trying Turkish tea, baklava, and authentic kebabs!",
+                    traveler: "Sarah M.",
+                    location: "United States"
+                  },
+                  {
+                    question: "Can you recommend family-friendly activities in Dubai?",
+                    answer: "Dubai offers amazing family activities including Atlantis Aquaventure Waterpark, Dubai Aquarium, IMG Worlds of Adventure, Legoland Dubai, Desert Safari (many offer child-friendly options), Dubai Parks and Resorts, KidZania, and the stunning beaches. Most malls also have fantastic entertainment zones for children.",
+                    traveler: "Robert K.",
+                    location: "Australia"
+                  },
+                  {
+                    question: "What's the best time to visit Cappadocia for hot air balloon rides?",
+                    answer: "The best time for hot air balloon rides in Cappadocia is from April to June and September to October when weather conditions are most favorable with clear skies and gentle winds. Summer (July-August) offers great weather but can be very hot and crowded. Winter flights are magical with snow-covered landscapes but more prone to cancellations.",
+                    traveler: "Mei L.",
+                    location: "Canada"
+                  }
+                ].map((item, index) => (
+                  <div key={index} className="bg-white rounded-2xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition-all duration-300">
+                    <div className="flex items-start mb-4">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#9e1687] to-[#14b8a6] flex items-center justify-center text-white font-bold text-sm mr-3 flex-shrink-0">
+                        {item.traveler.charAt(0)}
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">{item.traveler}</h4>
+                        <p className="text-sm text-gray-500">{item.location}</p>
+                      </div>
+                    </div>
+                    <p className="text-gray-800 font-medium mb-3">"{item.question}"</p>
+                    <div className="pl-4 border-l-2 border-[#14b8a6]">
+                      <p className="text-gray-600">{item.answer}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
             
-            <p className="text-xl md:text-2xl text-white/90 max-w-2xl mx-auto font-light mb-8">
-              Discover distinctive journeys through Turkey, Dubai, Greece, and Egypt with personalized guidance from our travel intelligence system.
-            </p>
+            {/* FAQ Section */}
+            <div className="mb-24" id="faq">
+              <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
+                Frequently Asked Questions
+              </h2>
+              
+              <div className="max-w-3xl mx-auto space-y-6">
+                {[
+                  {
+                    question: "How accurate is Atlas AI in providing travel information?",
+                    answer: "Atlas combines extensive knowledge about Turkey and Dubai with the latest data. While Atlas strives for accuracy, we recommend verifying time-sensitive information like opening hours and prices with official sources before finalizing your plans."
+                  },
+                  {
+                    question: "Can Atlas help me book tours or accommodations?",
+                    answer: "Atlas can provide recommendations and information about tours and accommodations, but actual bookings are handled through our booking platform. Atlas can guide you through options and direct you to the booking page when you're ready."
+                  },
+                  {
+                    question: "What areas does Atlas specialize in?",
+                    answer: "Atlas specializes in travel throughout Turkey (including Istanbul, Cappadocia, Antalya, and the Turkish Riviera) and Dubai. The AI has detailed knowledge about attractions, local customs, transportation, cuisine, shopping, and cultural experiences in these regions."
+                  },
+                  {
+                    question: "How personalized are Atlas's recommendations?",
+                    answer: "Atlas tailors recommendations based on your stated preferences, interests, travel style, budget considerations, and timeframe. The more details you share about what you're looking for, the more personalized the suggestions will be."
+                  }
+                ].map((item, index) => (
+                  <div key={index} className="bg-white rounded-2xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition-all duration-300 group">
+                    <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-[#9e1687] transition-colors duration-300">{item.question}</h3>
+                    <p className="text-gray-600">{item.answer}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
             
-            <a href="#chat" className="inline-block px-8 py-4 bg-gradient-to-r from-[#9e1687] to-[#14b8a6] text-white font-bold rounded-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
-              Consult with Atlas
-            </a>
-          </div>
-        </div>
-      </div>
-      
-      {/* Main Content */}
-      <div className="w-full max-w-6xl mx-auto -mt-20 px-4 sm:px-6 lg:px-8 relative z-20">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-white rounded-xl p-6 shadow-xl border border-gray-200 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-            <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mb-4">
-              <FaMapMarkedAlt className="h-8 w-8 text-[#9e1687]" />
-            </div>
-            <h3 className="text-xl font-bold mb-3 bg-gradient-to-r from-[#9e1687] to-[#14b8a6] bg-clip-text text-transparent">Destination Intelligence</h3>
-            <p className="text-gray-700">
-              Access nuanced insights on regional culture, architecture, cuisine, and accommodation options across Turkey, Dubai, Greece, and Egypt.
-            </p>
-          </div>
-          
-          <div className="bg-white rounded-xl p-6 shadow-xl border border-gray-200 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-            <div className="w-16 h-16 rounded-full bg-teal-100 flex items-center justify-center mb-4">
-              <FaImage className="h-8 w-8 text-[#14b8a6]" />
-            </div>
-            <h3 className="text-xl font-bold mb-3 bg-gradient-to-r from-[#14b8a6] to-[#9e1687] bg-clip-text text-transparent">Visual Exploration</h3>
-            <p className="text-gray-700">
-              Request visual references of specific destinations, historical sites, or accommodations to inform your travel decisions.
-            </p>
-          </div>
-          
-          <div className="bg-white rounded-xl p-6 shadow-xl border border-gray-200 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-            <div className="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center mb-4">
-              <FaRegCalendarAlt className="h-8 w-8 text-indigo-600" />
-            </div>
-            <h3 className="text-xl font-bold mb-3 bg-gradient-to-r from-indigo-600 to-[#14b8a6] bg-clip-text text-transparent">Itinerary Design</h3>
-            <p className="text-gray-700">
-              Receive tailored itinerary recommendations considering your interests, time constraints, and cultural preferences.
-            </p>
-          </div>
-        </div>
-        
-        {/* Chat Interface */}
-        <div id="chat" className="bg-white rounded-xl shadow-2xl p-1 md:p-2 mb-12 overflow-hidden border border-gray-200 transform hover:shadow-2xl transition-all duration-300">
-          <AIAssistant />
-        </div>
-        
-        {/* Testimonials */}
-        <div className="mb-12">
-          <h2 className="text-3xl font-display font-bold mb-8 text-center">Traveler Conversations</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-slate-50 rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300">
-              <div className="flex items-start mb-4">
-                <Image 
-                  src={getAssetPath("/images/testimonials/latin-american-woman.jpg")} 
-                  alt="Traveler" 
-                  width={60} 
-                  height={60} 
-                  className="rounded-full mr-4 object-cover border-2 border-purple-300"
-                />
-                <div>
-                  <p className="font-medium text-lg">Sophia R.</p>
-                  <p className="text-gray-500 text-sm">Planning a family journey</p>
+            {/* CTA Section */}
+            <div className="rounded-3xl bg-gradient-to-r from-[#9e1687]/10 to-[#14b8a6]/10 p-10 md:p-16 text-center">
+              <div className="max-w-3xl mx-auto">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                  Ready to Plan Your Dream Journey?
+                </h2>
+                <p className="text-xl text-gray-700 mb-8">
+                  Consult with Atlas or connect with our travel experts to start crafting your personalized adventure today.
+                </p>
+                <div className="flex flex-wrap justify-center gap-4">
+                  <a 
+                    href="#chat-section" 
+                    className="px-8 py-4 rounded-lg bg-gradient-to-r from-[#9e1687] to-[#14b8a6] text-white font-semibold shadow-lg hover:shadow-xl hover:shadow-purple-500/20 transform hover:translate-y-[-2px] transition-all duration-300"
+                  >
+                    Chat with Atlas
+                  </a>
+                  <Link
+                    href="/contact"
+                    className="px-8 py-4 rounded-lg bg-white text-gray-900 border border-gray-200 font-semibold hover:bg-gray-50 transition-all duration-300"
+                  >
+                    Contact Our Experts
+                  </Link>
                 </div>
               </div>
-              <p className="text-gray-700">"Atlas provided excellent recommendations for family-friendly activities in Istanbul, including optimal visiting times and cultural insights that enhanced our experience significantly."</p>
-            </div>
-            
-            <div className="bg-slate-50 rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300">
-              <div className="flex items-start mb-4">
-                <Image 
-                  src={getAssetPath("/images/testimonials/latin-american-man.jpg")} 
-                  alt="Traveler" 
-                  width={60} 
-                  height={60} 
-                  className="rounded-full mr-4 object-cover border-2 border-teal-300"
-                />
-                <div>
-                  <p className="font-medium text-lg">Carlos M.</p>
-                  <p className="text-gray-500 text-sm">Solo traveler</p>
-                </div>
-              </div>
-              <p className="text-gray-700">"The comprehensive 10-day itinerary Atlas created for my Turkish adventure perfectly balanced historical exploration with outdoor experiences, including exceptional culinary recommendations."</p>
             </div>
           </div>
-        </div>
-        
-        {/* FAQ Section */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-display font-bold mb-8 text-center">Frequently Asked Questions</h2>
-          
-          <div className="space-y-4">
-            <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-              <h3 className="text-lg font-bold mb-2">How accurate is the travel information?</h3>
-              <p className="text-gray-600">Atlas is powered by Google's Gemini 2.0 Flash model and continuously updated with accurate information about our destinations. Our travel experts regularly validate the recommendations to ensure reliability.</p>
-            </div>
-            
-            <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-              <h3 className="text-lg font-bold mb-2">Can I book directly through Atlas?</h3>
-              <p className="text-gray-600">While Atlas provides detailed information about tours and approximate pricing, final bookings are arranged through our travel consultants to ensure your specific requirements are fully addressed.</p>
-            </div>
-            
-            <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-              <h3 className="text-lg font-bold mb-2">What regions does Atlas specialize in?</h3>
-              <p className="text-gray-600">Atlas has specialized knowledge of Turkey, Dubai, Greece, and Egypt, including detailed information about attractions, accommodations, cultural context, and travel logistics within these regions.</p>
-            </div>
-          </div>
-        </div>
-        
-        {/* CTA */}
-        <div className="mb-16 bg-gradient-to-r from-[#9e1687] to-[#14b8a6] rounded-xl p-8 text-center text-white shadow-xl transform hover:scale-[1.01] transition-transform duration-300 relative overflow-hidden">
-          <div className="absolute inset-0 bg-black/10 z-0"></div>
-          
-          {/* Subtle background pattern */}
-          <div className="absolute inset-0 opacity-10 z-0">
-            <div className="absolute inset-0" style={{ 
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.2'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-              backgroundSize: '15px 15px'
-            }}></div>
-          </div>
-          
-          <div className="relative z-10">
-            <div className="mx-auto w-20 h-1 bg-white/40 rounded-full mb-6"></div>
-            <h2 className="text-3xl font-display font-bold mb-4">Ready to Plan Your Journey?</h2>
-            <p className="text-xl mb-8 max-w-2xl mx-auto">Consult with Atlas about your travel aspirations or connect with our travel experts for a personalized consultation.</p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link href="#chat" className="bg-white/15 hover:bg-white/25 backdrop-blur-sm px-8 py-3 rounded-lg font-bold transition-all duration-300 border border-white/30">
-                Consult with Atlas
-              </Link>
-              <Link href="/contact" className="bg-transparent border-2 border-white px-8 py-3 rounded-lg font-bold hover:bg-white/10 transition-all">
-                Contact Expert
-              </Link>
-            </div>
-          </div>
-        </div>
-        
-        <div className="mb-8 text-center">
-          <div className="flex justify-center mb-4">
-            <Image
-              src={getAssetPath("/images/saladino-travel-logo.png")}
-              alt="Saladino Travel"
-              width={120}
-              height={40}
-              className="h-auto"
-            />
-          </div>
-          <p className="text-gray-500 italic">
-            "Atlas continuously refines its knowledge to provide increasingly personalized travel recommendations."
-          </p>
-          <div className="mt-4 flex items-center justify-center space-x-2 text-xs text-gray-400">
-            <span>Saladino Travel</span>
-            <span>•</span>
-            <span>Gemini 2.0 Flash</span>
-            <span>•</span>
-            <span>{new Date().getFullYear()}</span>
-          </div>
-        </div>
-      </div>
-    </main>
+        </section>
+      </main>
+    </>
   );
 } 
