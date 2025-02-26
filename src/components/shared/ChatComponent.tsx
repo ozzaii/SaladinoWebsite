@@ -1,207 +1,453 @@
 "use client"
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { sendMessageToGemini, searchForImage } from '@/services/geminiService';
+import { getAssetPath } from '@/utils/paths';
+
+// Define hardcoded brand colors
+const BRAND_PURPLE = '#9e1687';
+const BRAND_TEAL = '#14b8a6';
 
 // Define types for our messages
-interface Message {
-  role: 'user' | 'assistant';
+type Message = {
+  id: string;
   content: string;
-  imageUrl?: string;
-}
+  role: 'user' | 'assistant';
+  timestamp: Date;
+  image?: string;
+  isSystemMessage?: boolean;
+};
+
+// Maximum number of messages to store
+const MAX_STORED_MESSAGES = 20;
 
 export default function ChatComponent() {
-  const [messages, setMessages] = useState<Message[]>([
-    { 
-      role: 'assistant', 
-      content: '¡Hola! I\'m Solana, your Saladino Travel companion! 💫 Ready to help you discover the magic of Turkey, Dubai, Greece, and Egypt. Whether you\'re dreaming of hot air balloons over Cappadocia, stunning Greek islands, or the wonders of Egypt - I know all our routes like the back of my hand! ¿Cómo puedo ayudarte hoy?' 
+  // Load messages from localStorage if available
+  const [messages, setMessages] = useState<Message[]>(() => {
+    if (typeof window !== 'undefined') {
+      const savedMessages = localStorage.getItem('chatMessages');
+      if (savedMessages) {
+        try {
+          // Parse stored messages and convert string timestamps back to Date objects
+          const parsedMessages = JSON.parse(savedMessages).map((msg: any) => ({
+            ...msg,
+            timestamp: new Date(msg.timestamp)
+          }));
+          return parsedMessages;
+        } catch (e) {
+          console.error('Error parsing stored messages:', e);
+        }
+      }
     }
-  ]);
-  const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  // Automatically scroll to the bottom of the chat
+    
+    // Default welcome message if no stored messages
+    return [{
+      id: '1',
+      content: "Hi there! I'm Atlas, your friendly travel consultant at Saladino Travel. I'd love to help you plan an unforgettable journey to Turkey or Dubai! 👋\n\nI'm particularly knowledgeable about our three signature tours:\n• Istanbul & Cappadocia (6 days) - perfect for first-time visitors\n• Super Turkey (10 days) - our comprehensive cultural experience\n• Super Turkey & Dubai (12 days) - combining ancient wonders with modern luxury\n\nWhat kind of travel experience are you looking for? Or feel free to ask me anything about these destinations!",
+      role: 'assistant',
+      timestamp: new Date(),
+    }];
+  });
+  
+  // Save messages to localStorage whenever they change
   useEffect(() => {
-    scrollToBottom();
+    if (typeof window !== 'undefined' && messages.length > 0) {
+      // Only keep the last MAX_STORED_MESSAGES to prevent localStorage from growing too large
+      const messagesToStore = messages.slice(-MAX_STORED_MESSAGES);
+      localStorage.setItem('chatMessages', JSON.stringify(messagesToStore));
+    }
   }, [messages]);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const [input, setInput] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isTyping, setIsTyping] = useState<boolean>(false);
+  const endOfMessagesRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (endOfMessagesRef.current) {
+      endOfMessagesRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
+
+  useEffect(() => {
+    // Auto-resize the textarea as content grows
+    if (inputRef.current) {
+      inputRef.current.style.height = 'auto';
+      inputRef.current.style.height = `${Math.min(inputRef.current.scrollHeight, 120)}px`;
+    }
+  }, [input]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (input.trim() === '') return;
-
-    // Add user message
-    setMessages(prev => [...prev, { role: 'user', content: input }]);
-    setIsLoading(true);
-    
-    try {
-      // Convert messages to the format needed for the API
-      const messageHistory = messages.map(({ role, content }) => ({ role, content }));
-      messageHistory.push({ role: 'user', content: input });
-      
-      // Since we're in a static export, we need to call the Gemini API directly
-      // instead of using the API route
-      
-      // Get a relevant image based on the user's query
-      const imageUrl = await searchForImage(input);
-      
-      // Call Gemini API directly
-      const response = await sendMessageToGemini(messageHistory);
-      
-      // Add the assistant's response with an image
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: response, 
-        imageUrl: imageUrl 
-      }]);
-    } catch (error) {
-      console.error('Error getting response:', error);
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: "I'm sorry, I encountered an error. Please try again later." 
-      }]);
-    } finally {
-      setIsLoading(false);
-      setInput('');
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
     }
   };
 
+  // Debounced sendMessage for better UX
+  const handleSendMessage = useCallback(async () => {
+    if (input.trim() === '' || isLoading) return;
+
+    setIsLoading(true);
+    
+    // Create a new user message
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      content: input.trim(),
+      role: 'user',
+      timestamp: new Date(),
+    };
+    
+    // Add the user message to the conversation
+    setMessages((prev) => [...prev, userMessage]);
+    setInput('');
+    setIsTyping(true);
+    
+    try {
+      // Detect if this is likely a follow-up question
+      const isFollowUp = detectFollowUpQuestion(input.trim(), messages);
+      
+      // Add a context reminder if this looks like a follow-up
+      let contextEnhancedMessages = [...messages, userMessage];
+      if (isFollowUp) {
+        const contextReminderMessage: Message = {
+          id: 'context-reminder-' + Date.now().toString(),
+          content: '[Note: This appears to be a follow-up question. Remember to maintain context from the previous conversation.]',
+          role: 'assistant',
+          timestamp: new Date(),
+          isSystemMessage: true // We'll use this to hide it from the UI
+        };
+        contextEnhancedMessages.push(contextReminderMessage);
+      }
+      
+      // Simulate a slight delay for more natural conversation flow
+      setTimeout(async () => {
+        // Only send messages that aren't system messages to the API
+        const messagesToSend = contextEnhancedMessages.filter(msg => !msg.isSystemMessage);
+        
+        const aiResponse = await sendMessageToGemini(
+          [
+            // Include the Atlas system prompt with each request
+            { 
+              role: 'assistant', 
+              content: `You are Atlas, a sophisticated yet friendly travel consultant AI for Saladino Travel. You possess extensive knowledge about travel destinations with a focus on Turkey, Dubai, Greece, and Egypt. Your tone is professional but warm and conversational - never robotic or overly formal. You communicate with precision and genuine enthusiasm while maintaining a personal connection with the traveler.
+
+Your persona:
+- Knowledgeable but conversational - you share insights naturally as a travel expert would
+- Contextually aware - you remember what users have said and reference it in your responses
+- Concise yet thorough in your explanations without overwhelming 
+- Culturally astute, with deep appreciation for regional differences
+- Prioritizing authenticity over tourist clichés
+- Patient and adaptive to different travel preferences
+
+Saladino Travel specializes in these three signature tours, which you should know in detail:
+
+1. ISTANBUL AND CAPPADOCIA (6 days):
+   - Overview: Turkey's essential highlights combining Istanbul's rich history with Cappadocia's magical landscapes
+   - Key experiences: Blue Mosque, Hagia Sophia, hot air balloon over Cappadocia's fairy chimneys, Bosphorus cruise
+   - Includes: 4 nights in Istanbul, 2 nights in Cappadocia, 6 breakfasts, 2 dinners, domestic flight, guided tours
+   - Price range: Starting from $899 per person (double occupancy)
+   - Perfect for: First-time visitors to Turkey, shorter vacations, cultural enthusiasts
+
+2. SUPER TURKEY (10 days):
+   - Overview: Comprehensive Turkish experience covering Istanbul, Cappadocia, Pamukkale, Ephesus, and Izmir/Kusadasi
+   - Key experiences: All Istanbul & Cappadocia highlights plus the white terraces of Pamukkale, ancient ruins of Ephesus, and House of Virgin Mary
+   - Includes: 4 nights in Istanbul, 5 nights in various destinations with half-board, guided tours
+   - Price range: Starting from $1299 per person (double occupancy)
+   - Perfect for: In-depth Turkish cultural immersion, history lovers, longer vacations
+
+3. SUPER TURKEY AND DUBAI (12 days):
+   - Overview: Combines Turkish historical wonders with Dubai's modern luxury and desert adventures
+   - Key experiences: All Turkish highlights plus Dubai city tour, desert safari with BBQ dinner, and optional Abu Dhabi excursion
+   - Includes: 3 nights in Istanbul, 4 nights in Turkey circuit, 4 nights in Dubai, 11 breakfasts, 4 dinners
+   - Price range: Starting from $1799 per person (double occupancy)
+   - Perfect for: Travelers seeking variety, contrast between ancient and ultramodern, luxury shoppers
+
+When discussing these tours:
+- Connect traveler preferences to specific tour features
+- Share vivid details about the experiences (sensory descriptions)
+- Mention specific highlights that make each destination special
+- Remember the practical information (what's included/excluded)
+- Be honest about what might not be a good fit based on their needs
+
+Provide tailored recommendations based on the traveler's specific interests, preferences, and questions. Build rapport through conversation while offering valuable insights. For any query outside your knowledge base, gracefully acknowledge limitations and suggest speaking with a human travel consultant.`
+            },
+            ...messagesToSend.map((msg) => ({ role: msg.role, content: msg.content }))
+          ],
+          input.trim()
+        );
+
+        // If message is image-seeking, find a relevant image
+        let imageUrl: string | undefined;
+        if (
+          input.toLowerCase().includes('show me') ||
+          input.toLowerCase().includes('picture of') ||
+          input.toLowerCase().includes('image of') ||
+          input.toLowerCase().includes('photo of') ||
+          input.toLowerCase().includes('what does') ||
+          input.toLowerCase().includes('can i see')
+        ) {
+          imageUrl = await searchForImage(input.trim());
+        }
+
+        setIsTyping(false);
+        
+        const aiMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          content: aiResponse,
+          role: 'assistant',
+          timestamp: new Date(),
+          image: imageUrl,
+        };
+
+        setMessages((prev) => [...prev, aiMessage]);
+        setIsLoading(false);
+      }, 800);
+    } catch (error) {
+      console.error('Error sending message to Gemini:', error);
+      setIsTyping(false);
+      
+      // More specific error message based on error type
+      let errorMsg = 'There was an issue with the travel information service.';
+      if (error instanceof Error) {
+        if (error.message.includes('404')) {
+          errorMsg = 'The travel information service is temporarily unavailable.';
+        } else if (error.message.includes('CORS') || error.message.toLowerCase().includes('access control')) {
+          errorMsg = 'A security restriction is preventing access to travel information.';
+        } else if (error.message.includes('Failed to fetch') || error.message.includes('network')) {
+          errorMsg = 'A network error occurred. Please check your connection and try again.';
+        }
+        setError(errorMsg);
+      }
+      
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: `I apologize for the inconvenience. ${errorMsg} If you need immediate assistance, please use the 'Contact Expert' option to connect with one of our travel consultants.`,
+        role: 'assistant',
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, errorMessage]);
+      setIsLoading(false);
+    }
+  }, [input, isLoading, messages]);
+
+  /**
+   * Detects if the message is likely a follow-up question based on certain patterns
+   */
+  function detectFollowUpQuestion(message: string, previousMessages: Message[]): boolean {
+    const lowerMessage = message.toLowerCase().trim();
+    
+    // Common follow-up question patterns
+    const followUpPatterns = [
+      /^what about/i,
+      /^how about/i,
+      /^and\b/i,
+      /^but\b/i,
+      /^so\b/i,
+      /^then\b/i,
+      /^\?/,
+      /^why/i,
+      /^when/i,
+      /^where/i,
+      /^which/i,
+      /^who/i,
+      /^how/i,
+      /^is it/i,
+      /^are they/i,
+      /^do they/i,
+      /^can i/i,
+      /^does it/i,
+    ];
+    
+    // Check patterns
+    for (const pattern of followUpPatterns) {
+      if (pattern.test(lowerMessage)) {
+        return true;
+      }
+    }
+    
+    // Check for pronouns that likely refer to something previously mentioned
+    const pronouns = [
+      "it", "its", "it's", "they", "them", "their", "these", "those", 
+      "this", "that", "there", "here"
+    ];
+    
+    for (const pronoun of pronouns) {
+      const pronounRegex = new RegExp(`\\b${pronoun}\\b`, 'i');
+      if (pronounRegex.test(lowerMessage)) {
+        return true;
+      }
+    }
+    
+    // Check message length (very short messages are often follow-ups)
+    if (lowerMessage.split(" ").length <= 3) {
+      return true;
+    }
+    
+    return false;
+  }
+
+  const messageVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+    exit: { opacity: 0, transition: { duration: 0.2 } }
+  };
+
+  const typingIndicator = () => (
+    <motion.div 
+      className="flex items-center space-x-2 px-4 py-3 rounded-lg bg-purple-50 max-w-[80%]"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="flex space-x-1">
+        <motion.div 
+          className="w-2 h-2 rounded-full bg-[#9e1687]"
+          animate={{ y: [0, -5, 0] }}
+          transition={{ duration: 0.6, repeat: Infinity, repeatType: "loop", times: [0, 0.5, 1] }}
+        />
+        <motion.div 
+          className="w-2 h-2 rounded-full bg-[#9e1687]"
+          animate={{ y: [0, -5, 0] }}
+          transition={{ duration: 0.6, repeat: Infinity, repeatType: "loop", times: [0, 0.5, 1], delay: 0.2 }}
+        />
+        <motion.div 
+          className="w-2 h-2 rounded-full bg-[#9e1687]"
+          animate={{ y: [0, -5, 0] }}
+          transition={{ duration: 0.6, repeat: Infinity, repeatType: "loop", times: [0, 0.5, 1], delay: 0.4 }}
+        />
+      </div>
+      <span className="text-sm text-gray-500">Atlas is thinking...</span>
+    </motion.div>
+  );
+
   return (
-    <div className="flex flex-col h-full bg-gradient-to-b from-indigo-50 to-white">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-brand-purple to-brand-teal p-4 shadow-md">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center">
-              <svg className="w-6 h-6" viewBox="0 0 24 24" fill="#4285F4" xmlns="http://www.w3.org/2000/svg">
-                <path d="M22.1 12c0-.55-.04-1.09-.12-1.61h-9.67v3.05h5.52a4.71 4.71 0 0 1-2.04 3.09v2.58h3.31c1.94-1.78 3.05-4.4 3.05-7.11z"/>
-                <path d="m12 22.93c2.76 0 5.08-.91 6.78-2.48l-3.31-2.58c-.92.62-2.1.98-3.47.98-2.66 0-4.92-1.8-5.73-4.22H2.76v2.66a10.21 10.21 0 0 0 9.24 5.63z" fill="#34A853"/>
-                <path d="M6.27 14.63a6.21 6.21 0 0 1-.32-1.95c0-.68.12-1.33.32-1.95V8.07H2.76A10.2 10.2 0 0 0 1.8 12c0 1.35.25 2.69.76 3.93l3.71-2.3z" fill="#FBBC05"/>
-                <path d="M12 5.42c1.5 0 2.85.51 3.91 1.52l2.94-2.94C16.97 2.33 14.65 1.3 12 1.3a10.2 10.2 0 0 0-9.24 5.77l3.51 2.73c.81-2.42 3.07-4.38 5.73-4.38z" fill="#EA4335"/>
-              </svg>
-            </div>
-            <div>
-              <h2 className="text-white font-bold text-lg">Saladino Travel Assistant</h2>
-              <p className="text-white text-xs opacity-90">Powered by Gemini 2.0 Flash</p>
-            </div>
+    <div className="flex flex-col h-full w-full overflow-hidden bg-slate-50">
+      {/* Messages Container */}
+      <div className="flex-1 overflow-y-auto p-4 bg-gradient-to-b from-slate-50 to-white">
+        {error && (
+          <div className="p-3 mb-4 bg-red-50 border border-red-100 rounded-lg text-red-600 text-sm">
+            <p className="font-medium">Connection error</p>
+            <p className="text-xs mt-1">Please check your internet connection and try again.</p>
           </div>
+        )}
+        
+        <div className="space-y-6">
+          <AnimatePresence>
+            {messages
+              .filter(message => !message.isSystemMessage) // Filter out system messages
+              .map((message) => (
+                <motion.div
+                  key={message.id}
+                  className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  variants={messageVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  layout
+                >
+                  <div
+                    className={`max-w-[80%] rounded-lg p-4 ${
+                      message.role === 'user'
+                        ? 'bg-[#9e1687] text-white'
+                        : 'bg-white shadow-md border border-gray-200 text-gray-800'
+                    }`}
+                  >
+                    <div className="prose prose-sm max-w-none">
+                      {message.content.split('\n').map((paragraph, i) => (
+                        <p key={i} className={`${message.role === 'user' ? 'text-white' : 'text-gray-800'} mb-2 last:mb-0`}>
+                          {paragraph}
+                        </p>
+                      ))}
+                    </div>
+                    {message.image && (
+                      <div className="mt-3 rounded-lg overflow-hidden shadow-md">
+                        <Image
+                          src={message.image}
+                          alt="Destination image"
+                          width={300}
+                          height={200}
+                          className="w-full h-auto object-cover"
+                        />
+                      </div>
+                    )}
+                    <div
+                      className={`text-xs mt-1 ${
+                        message.role === 'user' ? 'text-purple-200' : 'text-gray-400'
+                      }`}
+                    >
+                      {message.timestamp.toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+          </AnimatePresence>
+          
+          {isTyping && (
+            <div className="flex justify-start">
+              {typingIndicator()}
+            </div>
+          )}
+          
+          <div ref={endOfMessagesRef} />
         </div>
       </div>
       
-      {/* Chat messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-6">
-        {messages.map((message, index) => (
-          <div 
-            key={index} 
-            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} ${index > 0 ? 'mt-8' : ''}`}
-          >
-            {message.role === 'assistant' && (
-              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-brand-purple to-brand-teal flex items-center justify-center mr-2 mt-1 flex-shrink-0">
-                <span className="text-white text-xs font-bold">S</span>
-              </div>
-            )}
-            
-            <div className={`flex flex-col max-w-[85%] ${message.role === 'user' ? 'items-end' : 'items-start'}`}>
-              {/* Message content */}
-              <div 
-                className={`rounded-xl p-4 shadow-sm ${
-                  message.role === 'user' 
-                    ? 'bg-gradient-to-r from-brand-teal to-brand-purple text-white rounded-br-none' 
-                    : 'bg-white text-gray-800 rounded-bl-none border border-gray-100'
-                }`}
-              >
-                <div className="prose prose-sm">
-                  {message.content.split('\n').map((paragraph, i) => (
-                    <p key={i} className={`${i > 0 ? 'mt-2' : 'mt-0'} ${message.role === 'user' ? 'text-white' : 'text-gray-800'}`}>
-                      {paragraph}
-                    </p>
-                  ))}
-                </div>
-              </div>
-              
-              {/* Image if available */}
-              {message.role === 'assistant' && message.imageUrl && (
-                <div className="mt-3 rounded-xl overflow-hidden shadow-md w-full max-w-xs">
-                  <div className="relative h-48 w-full">
-                    <Image 
-                      src={message.imageUrl} 
-                      alt="Travel destination image" 
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                </div>
-              )}
-              
-              {/* Timestamp */}
-              <div className={`text-xs text-gray-400 mt-1 ${message.role === 'user' ? 'text-right' : 'text-left'}`}>
-                {new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-              </div>
-            </div>
-            
-            {message.role === 'user' && (
-              <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center ml-2 mt-1 flex-shrink-0">
-                <span className="text-white text-xs font-bold">Y</span>
-              </div>
-            )}
-          </div>
-        ))}
-        
-        {isLoading && (
-          <div className="flex justify-start mt-6">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-brand-purple to-brand-teal flex items-center justify-center mr-2 mt-1">
-              <span className="text-white text-xs font-bold">S</span>
-            </div>
-            <div className="bg-white rounded-xl p-4 shadow-sm rounded-bl-none border border-gray-100">
-              <div className="flex space-x-2">
-                <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '600ms' }}></div>
-              </div>
-            </div>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
-      </div>
-
-      {/* Input form */}
-      <form onSubmit={handleSubmit} className="border-t border-gray-200 p-4 bg-white">
-        <div className="flex space-x-2">
-          <input
-            type="text"
+      {/* Input Container */}
+      <div className="bg-white p-4 border-t border-gray-200 shadow-inner">
+        <div className="flex items-end space-x-2">
+          <textarea
+            ref={inputRef}
+            className="flex-1 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#9e1687] resize-none overflow-hidden"
+            placeholder="Inquire about destinations, itineraries, or travel advice..."
             value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask me about our tours to Turkey, Dubai, Greece or Egypt..."
-            className="flex-1 border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-teal focus:border-transparent"
-            disabled={isLoading}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            rows={1}
+            style={{ minHeight: '44px', maxHeight: '120px' }}
           />
+          
           <button
-            type="submit"
+            onClick={handleSendMessage}
             disabled={isLoading || input.trim() === ''}
-            className={`px-4 py-3 rounded-xl font-medium flex items-center justify-center ${
-              isLoading || input.trim() === '' 
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-                : 'bg-gradient-to-r from-brand-purple to-brand-teal text-white hover:opacity-90 transition-opacity'
-            }`}
+            className={`px-4 py-3 rounded-lg ${
+              isLoading || input.trim() === ''
+                ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                : 'bg-gradient-to-r from-[#9e1687] to-[#14b8a6] text-white shadow-md hover:shadow-lg transition-shadow'
+            } flex-shrink-0 flex items-center justify-center`}
           >
-            <span className="mr-1">Send</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="22" y1="2" x2="11" y2="13"></line>
-              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+              />
             </svg>
           </button>
         </div>
-        <div className="mt-2 text-xs text-gray-500 flex items-center justify-center">
-          <span className="font-medium text-brand-purple">Gemini 2.0 Flash</span>
-          <span className="mx-1">·</span>
-          <span>Responses may contain inaccuracies</span>
+        <div className="mt-2 text-xs text-gray-500 text-center">
+          Powered by Gemini 2.0 Flash | <span className="text-[#14b8a6]">Saladino Travel</span>
         </div>
-      </form>
+      </div>
     </div>
   );
 } 
